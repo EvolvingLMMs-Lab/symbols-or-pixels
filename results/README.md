@@ -1,6 +1,6 @@
 # Results
 
-Every number in the note can be recomputed from the files below:
+Tables 2–3, Figures 1–4, and the paired results of the note can be recomputed from the files below. The 1024² text runs, the training-overlap check, and the API-served 27B run are not included.
 - `analysis/build_results.py` builds `per_sample.csv` and `excluded_tasks.csv` from `raw/`;
 - `analysis/analyze.py` builds `summary/` from them.
 

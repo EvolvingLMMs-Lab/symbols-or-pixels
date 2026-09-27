@@ -12,7 +12,9 @@ This repository contains:
 - the inference and grading code;
 - the analysis and plotting scripts;
 - the raw model outputs and v2 scores;
-- a per-sample table from which every number in the note can be recomputed.
+- a per-sample table from which Tables 2–3, Figures 1–4, and the paired results of the note can be recomputed.
+
+Three results cited in the note are not included: the 1024² text runs, the training-overlap check, and the API-served 27B run.
 
 ## Main results
 
