@@ -1,0 +1,6 @@
+task_id,task,split,reason,detail
+G-21,G-21_multiple_occlusions_vertical_data-generator,In-Domain_50,no consistent final answer,"Pure animation: the prompt fixes the only change (the gray mask slides straight down until it leaves the frame); the objects are stationary, so there is no decision or value to state, and the final frame is the first frame without the mask."
+O-55,O-55_rotation_data-generator,In-Domain_50,no consistent final answer,"Pure camera-orbit animation: the prompt fixes the final view (elevation and azimuth), there is no decision to state, and the only final state is a rendered 3D view with no symbolic value in the metadata that a text answer could be checked against."
+O-9,O-9_shape_scaling_data-generator,Out-of-Domain_50,no consistent final answer,"Metadata defect: sgt.scale_factor (1.85/1.05/2.0/1.4) contradicts the rendered frames and the GT video (drawn B/A is about 0.86 in all 5 samples), so no metadata answer is checkable and a constant answer would score 5/5."
+O-33,O-33_counting_object_data-generator,In-Domain_50,video scorer check,scorer check: 3 of 5 ground-truth videos score 0 under the v2 scorer
+G-161,G-161_mark_second_largest_shape_data-generator,Out-of-Domain_50,video scorer check,scorer check: a video that does nothing receives full marks

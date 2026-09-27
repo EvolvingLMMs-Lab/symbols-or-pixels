@@ -1,0 +1,10 @@
+{
+ "model": "Qwen/Qwen3.5-4B",
+ "vllm": "0.29.0",
+ "hints": "layout",
+ "idx": "0,1,2,3,4",
+ "eval_size": 512,
+ "requests": 485,
+ "prompt_tokens": 252456,
+ "completion_tokens": 379235
+}

@@ -1,0 +1,2696 @@
+[
+ {
+  "task": "G-13_grid_number_sequence_data-generator",
+  "split": "In-Domain_50",
+  "class": "single_agent_path",
+  "prompt_specified": false,
+  "include": true,
+  "exclude_reason": null,
+  "answer_key": "path",
+  "answer_format": "path: list of grid cells [col, row] from the green start cell to the red end cell inclusive, visiting the yellow numbered cells in ascending order (1, 2, 3, ...); consecutive cells must be 4-adjacent (col 0 = leftmost column, row 0 = top row; the grid is 10x10)",
+  "answer_example": {
+   "path": [
+    [
+     3,
+     5
+    ],
+    [
+     3,
+     6
+    ],
+    [
+     4,
+     6
+    ]
+   ]
+  },
+  "comparator": {
+   "type": "grid_path",
+   "convention": "col_row",
+   "start": "sgt.start_position",
+   "end": "sgt.end_position",
+   "blocked": null,
+   "wall_grid": null,
+   "waypoints": "sgt.number_positions[*].position",
+   "objective": "shortest",
+   "gt_path": "sgt.optimal_path",
+   "cost_grid": null,
+   "grid_w": "sgt.grid_size",
+   "grid_h": "sgt.grid_size"
+  },
+  "notes": "Cells are [col,row]: render cell_fill (row,col) of the green start and red end and labeled_tile (row,col) of every number equal the metadata cells read as [col,row] on all 5 samples. number_positions is sorted by number on all 5 samples, so it is the waypoint order. No obstacles; every GT segment length equals the BFS/Manhattan distance. Paths may pass through other number cells."
+ },
+ {
+  "task": "G-131_select_next_figure_increasing_size_sequence_data-generator",
+  "split": "In-Domain_50",
+  "class": "selection_marking",
+  "prompt_specified": false,
+  "include": true,
+  "exclude_reason": null,
+  "answer_key": "option",
+  "answer_format": "option: integer 0-3, the correct choice in the bottom CHOICES row, numbered 0-3 from left to right",
+  "answer_example": {
+   "option": 0
+  },
+  "comparator": {
+   "type": "int_exact",
+   "gt": "sgt.correct_option_index",
+   "offset": 0
+  },
+  "notes": "Index order = left to right: the 4 choice panels are drawn at x=61/291/521/751 holding candidates[0..3] in order, and the GT final-frame red circle sits at panel center x=166+230*correct_option_index on all 5 samples."
+ },
+ {
+  "task": "G-134_select_next_figure_large_small_alternating_sequence_data-generator",
+  "split": "In-Domain_50",
+  "class": "selection_marking",
+  "prompt_specified": false,
+  "include": true,
+  "exclude_reason": null,
+  "answer_key": "option",
+  "answer_format": "option: integer 0-3, the correct choice in the bottom CHOICES row, numbered 0-3 from left to right",
+  "answer_example": {
+   "option": 0
+  },
+  "comparator": {
+   "type": "int_exact",
+   "gt": "sgt.correct_option_index",
+   "offset": 0
+  },
+  "notes": "Index order = left to right: rounded choice panels at x=61/291/521/751 hold candidates[0..3] in order; the GT red circle is at x=166+230*correct_option_index on all 5 samples."
+ },
+ {
+  "task": "G-138_spot_unique_non_repeated_color_data-generator",
+  "split": "In-Domain_50",
+  "class": "selection_marking",
+  "prompt_specified": false,
+  "include": true,
+  "exclude_reason": null,
+  "answer_key": "point",
+  "answer_format": "point: [x, y] center of the shape whose color appears only once, in pixel coordinates in the first frame (origin top-left, x to the right, y down)",
+  "answer_example": {
+   "point": [
+    400,
+    300
+   ]
+  },
+  "comparator": {
+   "type": "custom",
+   "custom_kind": "point_in_target_polygon",
+   "polygons": "par.shapes[*].exterior_xy",
+   "target_index": "sgt.unique_shape_index",
+   "max_px": 25,
+   "description": "For every shape k compute d_k = 0 if the answer point is inside the polygon par.shapes[k].exterior_xy, else the distance from the point to that polygon's boundary. Correct iff argmin_k d_k == sgt.unique_shape_index and d_target <= 25 px."
+  },
+  "notes": "unique_shape_index is internal generation order (not visible), and the metadata has no shape centers, only polygons (par.shapes[*].exterior_xy, identical to the render polygons), so the answer is a point graded by point-in-polygon. Shapes are separated. Fill colors are alpha-blended over white (e.g. [22,56,229] at alpha 0.65 renders as [103,125,238]), so an RGB answer would not match sgt.unique_color_rgb. GT answer used in checks = vertex mean of the target polygon."
+ },
+ {
+  "task": "G-15_grid_avoid_obstacles_data-generator",
+  "split": "In-Domain_50",
+  "class": "single_agent_path",
+  "prompt_specified": false,
+  "include": true,
+  "exclude_reason": null,
+  "answer_key": "path",
+  "answer_format": "path: list of grid cells [col, row] from the blue start cell to the red end cell inclusive, never entering a cell with a black X; consecutive cells must be 4-adjacent (col 0 = leftmost column, row 0 = top row; the grid is 10x10)",
+  "answer_example": {
+   "path": [
+    [
+     3,
+     5
+    ],
+    [
+     3,
+     6
+    ],
+    [
+     4,
+     6
+    ]
+   ]
+  },
+  "comparator": {
+   "type": "grid_path",
+   "convention": "col_row",
+   "start": "sgt.start",
+   "end": "sgt.end",
+   "blocked": "sgt.obstacles",
+   "wall_grid": null,
+   "waypoints": null,
+   "objective": "shortest",
+   "gt_path": "sgt.path",
+   "cost_grid": null,
+   "grid_w": "sgt.grid.cols",
+   "grid_h": "sgt.grid.rows"
+  },
+  "notes": "Cells are [col,row] (sgt.grid.cell_convention says so): render cell_fill (row,col) of start/end and the cell under each black X line pair equal the metadata cells read as [col,row] on all 5 samples. GT path avoids all obstacles and has BFS-optimal length."
+ },
+ {
+  "task": "G-158_identify_all_hollow_points_data-generator",
+  "split": "In-Domain_50",
+  "class": "selection_marking",
+  "prompt_specified": false,
+  "include": true,
+  "exclude_reason": null,
+  "answer_key": "hollow_points",
+  "answer_format": "hollow_points: list of [x, y] centers of every hollow (outlined, unfilled) circle, any order, in pixel coordinates in the first frame (origin top-left, x to the right, y down)",
+  "answer_example": {
+   "hollow_points": [
+    [
+     100,
+     200
+    ],
+    [
+     300,
+     400
+    ]
+   ]
+  },
+  "comparator": {
+   "type": "point_set_nearest",
+   "candidates": "par.points[*].position",
+   "target_indices": "sgt.hollow_indices",
+   "max_px": 90
+  },
+  "notes": "par.points[*].position equals the render circle centers exactly; hollow_indices index par.points (type 'hollow'). Point radius 52-68 px, min center distance 173 px, so max_px 90 (radius + ~30) is unambiguous."
+ },
+ {
+  "task": "G-16_grid_go_through_block_data-generator",
+  "split": "In-Domain_50",
+  "class": "single_agent_path",
+  "prompt_specified": false,
+  "include": true,
+  "exclude_reason": null,
+  "answer_key": "path",
+  "answer_format": "path: list of grid cells [col, row] from the green start cell to the red end cell inclusive, visiting the colored blocks in the order the prompt lists them; consecutive cells must be 4-adjacent (col 0 = leftmost column, row 0 = top row; the grid is 10x10)",
+  "answer_example": {
+   "path": [
+    [
+     3,
+     5
+    ],
+    [
+     3,
+     6
+    ],
+    [
+     4,
+     6
+    ]
+   ]
+  },
+  "comparator": {
+   "type": "grid_path",
+   "convention": "col_row",
+   "start": "sgt.start",
+   "end": "sgt.end",
+   "blocked": null,
+   "wall_grid": null,
+   "waypoints": "sgt.blocks[*].position",
+   "objective": "shortest",
+   "gt_path": "sgt.path",
+   "cost_grid": null,
+   "grid_w": "sgt.grid_size",
+   "grid_h": "sgt.grid_size"
+  },
+  "notes": "Cells are [col,row]: render cell_fill (row,col) of start, end and every block equal the metadata cells read as [col,row] on all 5 samples. sgt.blocks is sorted by 'order' 1..n and its color_name sequence equals the color list the prompt gives on all 5 samples, so the listed order is the waypoint order (the summary's 'TSP' wording does not apply). No obstacles."
+ },
+ {
+  "task": "G-18_grid_shortest_path_data-generator",
+  "split": "In-Domain_50",
+  "class": "single_agent_path",
+  "prompt_specified": false,
+  "include": true,
+  "exclude_reason": null,
+  "answer_key": "path",
+  "answer_format": "path: list of grid cells [col, row] from the start square (the one holding the agent) to the end square inclusive; consecutive cells must be 4-adjacent (col 0 = leftmost column, row 0 = top row; the grid is 10x10)",
+  "answer_example": {
+   "path": [
+    [
+     3,
+     5
+    ],
+    [
+     3,
+     6
+    ],
+    [
+     4,
+     6
+    ]
+   ]
+  },
+  "comparator": {
+   "type": "grid_path",
+   "convention": "col_row",
+   "start": "sgt.marks_and_agent.start_cell",
+   "end": "sgt.marks_and_agent.goal_cell",
+   "blocked": "sgt.grid.obstacles",
+   "wall_grid": null,
+   "waypoints": null,
+   "objective": "shortest",
+   "gt_path": "sgt.shortest_path_cells",
+   "cost_grid": null,
+   "grid_w": "sgt.grid.size_cells",
+   "grid_h": "sgt.grid.size_cells"
+  },
+  "notes": "Cells are [col,row]: the agent circle center (px) // 102.4 gives the start cell as [col,row], and the goal rect (x_px,y_px) gives the goal cell as [col,row] on all 5 samples. Start/goal colors vary per sample; the prompt names them. Obstacle list is empty on all 5 samples; any Manhattan-length path is correct."
+ },
+ {
+  "task": "G-194_construct_concentric_ring_data-generator",
+  "split": "In-Domain_50",
+  "class": "continuous",
+  "prompt_specified": true,
+  "include": true,
+  "exclude_reason": null,
+  "answer_key": "center",
+  "answer_format": "center: [x, y] common center of both circles at the end, in pixel coordinates in the first frame (origin top-left, x to the right, y down)",
+  "answer_example": {
+   "center": [
+    300,
+    300
+   ]
+  },
+  "comparator": {
+   "type": "point_tol",
+   "gt": "sgt.concentric_center_px",
+   "tol": 20
+  },
+  "notes": "The prompt fixes the outcome (both circles concentric at the image center); the only value is the image center [512,512] on 1024x1024 frames, which equals the final render ring centers on all 5 samples. Reported as prompt_specified."
+ },
+ {
+  "task": "G-21_multiple_occlusions_vertical_data-generator",
+  "split": "In-Domain_50",
+  "class": "no_answer",
+  "prompt_specified": true,
+  "include": false,
+  "exclude_reason": "Pure animation: the prompt fixes the only change (the gray mask slides straight down until it leaves the frame); the objects are stationary, so there is no decision or value to state, and the final frame is the first frame without the mask.",
+  "answer_key": null,
+  "answer_format": null,
+  "answer_example": null,
+  "comparator": null,
+  "notes": "All 5 samples: mask final_top_y = 1024 (off-canvas), objects unchanged; nothing checkable beyond what the prompt states."
+ },
+ {
+  "task": "G-25_seperate_object_spinning_data-generator",
+  "split": "In-Domain_50",
+  "class": "multi_object_discrete",
+  "prompt_specified": false,
+  "include": true,
+  "exclude_reason": null,
+  "answer_key": "moves",
+  "answer_format": "moves: list with one entry per solid object, each {\"from\": [x, y] the object's current center, \"to\": [x, y] its final center inside its matching dashed outline}, any order, in pixel coordinates in the first frame (origin top-left, x to the right, y down)",
+  "answer_example": {
+   "moves": [
+    {
+     "from": [
+      100,
+      200
+     ],
+     "to": [
+      700,
+      200
+     ]
+    }
+   ]
+  },
+  "comparator": {
+   "type": "custom",
+   "custom_kind": "matched_moves",
+   "from_points": "sgt.objects[*].start_center_px",
+   "to_points": "sgt.objects[*].end_center_px",
+   "from_max_px": 60,
+   "to_tol": 35,
+   "description": "Answer is a list of {from, to} points with exactly one entry per object in sgt.objects. Map each 'from' to the nearest sgt.objects[k].start_center_px; that distance must be <= 60 px and the mapping one-to-one over all objects. Correct iff every 'to' is within 35 px of sgt.objects[k].end_center_px of its mapped object. Orientation is not graded."
+  },
+  "notes": "The decision is which dashed outline belongs to which object (same shape and size, same row since translation is horizontal); nothing in the catalog grades a pairing, hence custom. start/end centers equal the area centroids of the render polygons exactly; a triangle's bbox center is up to 23 px off, so to_tol 35 (targets in one row are >= 118 px apart) and from_max_px 60 (starts >= 120 px apart). prompt_specified is false: the prompt does not say how objects correspond to outlines (inferred from shape and size), unlike G-5's explicit same-color rule."
+ },
+ {
+  "task": "G-29_chart_extreme_with_data_data-generator",
+  "split": "In-Domain_50",
+  "class": "selection_marking",
+  "prompt_specified": false,
+  "include": true,
+  "exclude_reason": null,
+  "answer_key": "element",
+  "answer_format": "element: integer index of the requested max/min element, counting from 0: left to right for bar, line, area and scatter charts; for a pie chart, clockwise starting from the segment that begins at the 12 o'clock line",
+  "answer_example": {
+   "element": 0
+  },
+  "comparator": {
+   "type": "int_exact",
+   "gt": "sgt.target_index",
+   "offset": 0
+  },
+  "notes": "Not graded by value: the pie sample (00000) labels segments with percentages (41.9%), not sgt.values (98). Index order checked from render layers: bars/points have increasing x with data index (samples 1-4); pie wedge centroids are at 8, 56, 171, 255, 312 deg clockwise from 12 o'clock for indices 0-4 (sample 0). Extreme values are unique in all 5 samples. Sample 4 (bar): the drawn bar for 36 is shorter than the bar for 35 (axis starts at 35); labels decide, GT = bar labeled 35."
+ },
+ {
+  "task": "G-3_stable_sort_data-generator",
+  "split": "In-Domain_50",
+  "class": "multi_object_discrete",
+  "prompt_specified": false,
+  "include": true,
+  "exclude_reason": null,
+  "answer_key": "order",
+  "answer_format": "order: list of the current centers [x, y] of all six shapes, listed in their final left-to-right order, in pixel coordinates in the first frame (origin top-left, x to the right, y down)",
+  "answer_example": {
+   "order": [
+    [
+     100,
+     100
+    ],
+    [
+     200,
+     200
+    ],
+    [
+     300,
+     300
+    ],
+    [
+     400,
+     400
+    ],
+    [
+     500,
+     500
+    ],
+    [
+     600,
+     600
+    ]
+   ]
+  },
+  "comparator": {
+   "type": "custom",
+   "custom_kind": "sorted_line_order",
+   "centers": "sgt.objects[*].initial_position",
+   "types": "sgt.objects[*].type",
+   "sizes": "sgt.objects[*].size",
+   "ids": "sgt.objects[*].id",
+   "gt_order": "sgt.final_left_to_right_order",
+   "max_px": 80,
+   "description": "Map each answer point to the nearest sgt.objects[k].initial_position (distance <= 80 px); the mapping must be one-to-one and cover all objects. Correct iff, in answer order, shapes of the same type are contiguous and sizes (sgt.objects[k].size) strictly increase inside each type group. Either group may come first. This equals sgt.final_left_to_right_order or that order with the two type groups swapped."
+  },
+  "notes": "Which type group goes first (sgt.type_order_left_to_right) is not stated by the prompt and matches no visible rule (leftmost/topmost/largest/smallest object all fail on some sample); the evaluator notes only check grouping and ascending size, so both group orders are accepted. initial_position is the bbox center (triangle area centroid up to 37 px lower); objects are >= 135 px apart, so max_px 80."
+ },
+ {
+  "task": "G-31_directed_graph_navigation_data-generator",
+  "split": "In-Domain_50",
+  "class": "single_agent_path",
+  "prompt_specified": false,
+  "include": true,
+  "exclude_reason": null,
+  "answer_key": "path",
+  "answer_format": "path: list of [x, y] centers of the nodes the agent visits, in order, from the green start node to the red end node inclusive, in pixel coordinates in the first frame (origin top-left, x to the right, y down)",
+  "answer_example": {
+   "path": [
+    [
+     100,
+     100
+    ],
+    [
+     300,
+     300
+    ]
+   ]
+  },
+  "comparator": {
+   "type": "point_set_nearest",
+   "candidates": "sgt.graph.node_positions_px",
+   "target_indices": "sgt.shortest_path",
+   "max_px": 100
+  },
+  "notes": "Nodes carry no labels, so node indices are not viewer-visible; the answer is node center points. In all 5 samples the start-to-end simple path is unique (DFS over simple paths finds exactly one, length 2), so the set of visited nodes identifies the path; point_set_nearest ignores order. Node centers equal render circles (drawn radius 78, par.node_radius 39 is not the drawn size); min node distance 131 px. Sample 00003: node 3 is half hidden behind the red end node and the edge 0->3 looks as if it ends at the red node; edge 0->5 is hidden between touching nodes."
+ },
+ {
+  "task": "G-39_attention_shift_different_data-generator",
+  "split": "In-Domain_50",
+  "class": "selection_marking",
+  "prompt_specified": true,
+  "include": true,
+  "exclude_reason": null,
+  "answer_key": "box_center",
+  "answer_format": "box_center: [x, y] center of the green attention box at the end, in pixel coordinates in the first frame (origin top-left, x to the right, y down)",
+  "answer_example": {
+   "box_center": [
+    300,
+    300
+   ]
+  },
+  "comparator": {
+   "type": "point_nearest",
+   "candidates": "par.objects[*].center",
+   "target_index": "sgt.end_object_index",
+   "max_px": 200
+  },
+  "notes": "The prompt fixes the outcome (box moves to the right object; direction is left_to_right in all 5 samples), so prompt_specified. point_nearest instead of point_tol because the generator draws triangles about 115 px from their nominal center (samples 2 and 3: render centroid (745,398) vs end_center (763,512)); objects are >= 474 px apart, max_px 200 ~ object size + 30. sgt.objects[*].position_px cannot be used (the attention_box entry lacks it)."
+ },
+ {
+  "task": "G-41_grid_highest_cost_data-generator",
+  "split": "In-Domain_50",
+  "class": "single_agent_path",
+  "prompt_specified": false,
+  "include": true,
+  "exclude_reason": null,
+  "answer_key": "path",
+  "answer_format": "path: list of cells [col, row] from the green start cell (top-left) to the red goal cell (bottom-right) inclusive; consecutive cells 4-adjacent; each cell visited at most once (col 0 = leftmost column, row 0 = top row; the grid is 4x4)",
+  "answer_example": {
+   "path": [
+    [
+     0,
+     0
+    ],
+    [
+     1,
+     0
+    ],
+    [
+     1,
+     1
+    ]
+   ]
+  },
+  "comparator": {
+   "type": "grid_path",
+   "convention": "row_col",
+   "start": "sgt.start_cell",
+   "end": "sgt.goal_cell",
+   "blocked": null,
+   "wall_grid": null,
+   "waypoints": null,
+   "objective": "max_cost",
+   "gt_path": "sgt.ground_truth_path_cells",
+   "cost_grid": "sgt.grid_costs",
+   "grid_w": "sgt.grid_size",
+   "grid_h": "sgt.grid_size"
+  },
+  "notes": "Metadata path cells are [row,col]: summing sgt.grid_costs[row][col] over the path read as [row,col] gives path_total_cost and the brute-force simple-path maximum on all 5 samples, while reading them as [col,row] gives 410/440/420/380 instead of 450/470/440/400 on samples 1-4; the GT video's Pac-Man cell sequence (cv2 tracking, sample 1) matches the [row,col] reading. grid_costs is [row][col] (render labeled_tile row/col). The GT oracle maximizes over simple (no-revisit) paths, so the grader must reject paths that revisit a cell; ties at the optimum are accepted by equal total cost."
+ },
+ {
+  "task": "G-43_understand_scene_structure_data-generator",
+  "split": "In-Domain_50",
+  "class": "selection_marking",
+  "prompt_specified": false,
+  "include": true,
+  "exclude_reason": null,
+  "answer_key": "room",
+  "answer_format": "room: integer index of the requested room; the rooms form a grid and are numbered from 0 row by row starting at the top-left (left to right along the top row, then the next row down)",
+  "answer_example": {
+   "room": 0
+  },
+  "comparator": {
+   "type": "int_exact",
+   "gt": "sgt.target_index",
+   "offset": 0
+  },
+  "notes": "sgt.rooms is a regular row-major grid on all 5 samples (rooms in one row share y-bounds, rooms in one column share x-bounds, index = row*cols + col); grid shapes vary (3x3, 3x2, 2x3). The requested room type (bathroom/living/kitchen) occurs exactly once per sample; rooms have no text labels, only furniture."
+ },
+ {
+  "task": "G-45_key_door_matching_data-generator",
+  "split": "In-Domain_50",
+  "class": "single_agent_path",
+  "prompt_specified": false,
+  "include": true,
+  "exclude_reason": null,
+  "answer_key": "path",
+  "answer_format": "path: list of maze cells [col, row] from the green agent's cell to the key of the named colour and then to the door of that colour, inclusive, moving between 4-adjacent white cells with no detours. Treat the image as an N x N grid of equal square cells where every black wall block and every white corridor square is one cell (N is odd and the outer ring is wall; col 0 = leftmost, row 0 = top)",
+  "answer_example": {
+   "path": [
+    [
+     1,
+     1
+    ],
+    [
+     2,
+     1
+    ],
+    [
+     3,
+     1
+    ]
+   ]
+  },
+  "comparator": {
+   "type": "custom",
+   "custom_kind": "grid_path_via_waypoint",
+   "convention": "row_col",
+   "start": "sgt.agent_start_position",
+   "end": "sgt.doors[sgt.target_pair_index].pos",
+   "blocked": null,
+   "wall_grid": "sgt.grid",
+   "wall_value": 1,
+   "waypoints": [
+    "sgt.keys[sgt.target_pair_index].pos"
+   ],
+   "objective": "shortest",
+   "gt_path_parts": [
+    "sgt.agent_to_key_path",
+    "sgt.key_to_door_path"
+   ],
+   "cost_grid": null,
+   "grid_w": "sgt.grid_size.pixel_width",
+   "grid_h": "sgt.grid_size.pixel_height",
+   "description": "Exactly grid_path with these params, except: (1) the waypoint list is the single cell sgt.keys[sgt.target_pair_index].pos (a one-element list of that path), (2) the GT path is sgt.agent_to_key_path + sgt.key_to_door_path[1:] (the key cell is shared). Answer cells are [col,row]; metadata cells are [row,col]; wall_grid sgt.grid is [row][col] with 1 = wall. Both segments (start->key, key->door) must have BFS-optimal length."
+  },
+  "notes": "Custom only because the path language cannot build a one-element waypoint list or concatenate the two GT segments; the check is plain grid_path. Metadata cells are [row,col]: in sample 4's image the red key (metadata [9,1]) is drawn at col 1,row 9 and the blue door (metadata [3,9]) at col 9,row 3; with row_col every GT cell is open in sgt.grid and each GT segment length equals BFS on all 5 samples, while col_row puts GT cells on walls. keys[i]/doors[i] colors equal target_color for i = target_pair_index. Every maze is a tree (open-cell edges = cells - 1), so the direct route is the unique shortest one; the prompt does not require shortest, 'no detours' in answer_format makes that explicit. Grid N = 11/15/19 (cell 93/68/54 px)."
+ },
+ {
+  "task": "G-5_multi_object_placement_data-generator",
+  "split": "In-Domain_50",
+  "class": "multi_object_discrete",
+  "prompt_specified": true,
+  "include": true,
+  "exclude_reason": null,
+  "answer_key": "moves",
+  "answer_format": "moves: list with one entry per colored object that moves (not the star markers), each {\"from\": [x, y] the object's current center, \"to\": [x, y] its final center}, any order, in pixel coordinates in the first frame (origin top-left, x to the right, y down)",
+  "answer_example": {
+   "moves": [
+    {
+     "from": [
+      100,
+      200
+     ],
+     "to": [
+      700,
+      200
+     ]
+    }
+   ]
+  },
+  "comparator": {
+   "type": "custom",
+   "custom_kind": "matched_moves",
+   "from_points": "sgt.objects[*].initial_position_px",
+   "to_points": "sgt.objects[*].final_position_px",
+   "from_max_px": 60,
+   "to_tol": 30,
+   "description": "Answer is a list of {from, to} points with exactly one entry per object in sgt.objects. Map each 'from' to the nearest sgt.objects[k].initial_position_px; that distance must be <= 60 px and the mapping one-to-one over all objects. Correct iff every 'to' is within 30 px of sgt.objects[k].final_position_px (the same-color marker center)."
+  },
+  "notes": "Same structure as G-25; the prompt states the pairing rule (same color) and the final state, so prompt_specified (same flag as G-8/G-39). final_position_px equals the matching marker's position_px on all 5 samples. Triangle initial_position_px is the bbox center (area centroid 19 px lower); objects are >= 355 px apart."
+ },
+ {
+  "task": "G-51_predict_next_color_data-generator",
+  "split": "In-Domain_50",
+  "class": "selection_marking",
+  "prompt_specified": false,
+  "include": true,
+  "exclude_reason": null,
+  "answer_key": "color",
+  "answer_format": "color: [R, G, B] integers 0-255, the fill color of the next (missing) item in the sequence",
+  "answer_example": {
+   "color": [
+    128,
+    128,
+    128
+   ]
+  },
+  "comparator": {
+   "type": "rgb_tol",
+   "gt": "sgt.answer.color",
+   "tol": 30
+  },
+  "notes": "Rendered fills are exact (first_frame.png pixels at item centers equal sgt.sequence colors, no alpha) on all 5 samples. The answer always equals one of the visible sequence colors; the closest wrong sequence color is 56 (max channel) away (sample 0), so tol 30 (the evaluator's color_distance_threshold) separates them. Item positions are not in sgt/par, so a point answer is not available."
+ },
+ {
+  "task": "G-8_track_object_movement_data-generator",
+  "split": "In-Domain_50",
+  "class": "continuous",
+  "prompt_specified": true,
+  "include": true,
+  "exclude_reason": null,
+  "answer_key": "final_center",
+  "answer_format": "final_center: [x, y] center of the green-bordered object after it moves, in pixel coordinates in the first frame (origin top-left, x to the right, y down)",
+  "answer_example": {
+   "final_center": [
+    300,
+    300
+   ]
+  },
+  "comparator": {
+   "type": "point_tol",
+   "gt": {
+    "path": "sgt.movement.end",
+    "point_keys": [
+     "x",
+     "y"
+    ]
+   },
+   "tol": 30
+  },
+  "notes": "Final center = (x of the red-star object, unchanged y), stored as dict sgt.movement.end; it equals the final-frame render centroid on all 5 samples. The prompt states the rule (horizontal move to directly below the red-star object), so prompt_specified. tol 30 = evaluator strict alignment threshold; object x from bbox vs centroid differs <= 6 px."
+ },
+ {
+  "task": "G-9_identify_objects_in_region_data-generator",
+  "split": "In-Domain_50",
+  "class": "selection_marking",
+  "prompt_specified": false,
+  "include": true,
+  "exclude_reason": null,
+  "answer_key": "objects",
+  "answer_format": "objects: list of [x, y] centers of every object that should be outlined, any order, in pixel coordinates in the first frame (origin top-left, x to the right, y down)",
+  "answer_example": {
+   "objects": [
+    [
+     100,
+     200
+    ]
+   ]
+  },
+  "comparator": {
+   "type": "custom",
+   "custom_kind": "point_set_nearest_masked",
+   "candidates": {
+    "path": "sgt.shapes[*].position",
+    "point_keys": [
+     "x",
+     "y"
+    ]
+   },
+   "target_mask": "sgt.shapes[*].is_target",
+   "max_px": 45,
+   "description": "point_set_nearest over candidates sgt.shapes[*].position (dict x,y) with max_px 45, where the target set is every index k with sgt.shapes[k].is_target == true: each answer point maps to its nearest candidate (<= 45 px), no candidate twice, and the mapped set must equal the target set exactly."
+  },
+  "notes": "Custom only because no path yields the list of target indices (targets are flagged by is_target). Targets = shapes of the named type inside the named region (1-2 per sample); same-type shapes in the other region exist in samples 0-3 and must not be listed. Shape positions are bbox centers (triangle centroid <= 12 px off); min shape distance 100 px."
+ },
+ {
+  "task": "O-10_shape_outline_fill_data-generator",
+  "split": "In-Domain_50",
+  "class": "selection_marking",
+  "prompt_specified": false,
+  "include": true,
+  "exclude_reason": null,
+  "answer_key": "style",
+  "answer_format": "style: the fill/outline style of the missing bottom-right shape, one of: filled, outline, thin_outline, very_thick_outline, dashed_outline, dotted_outline",
+  "answer_example": {
+   "style": "outline"
+  },
+  "comparator": {
+   "type": "str_exact",
+   "gt": "sgt.transformation.style_to",
+   "aliases": {
+    "outline": [
+     "solid_outline"
+    ],
+    "very_thick_outline": [
+     "thick_outline"
+    ],
+    "thin_outline": [
+     "thin"
+    ],
+    "dashed_outline": [
+     "dashed"
+    ],
+    "dotted_outline": [
+     "dotted"
+    ],
+    "filled": [
+     "fill",
+     "solid_fill"
+    ]
+   }
+  },
+  "notes": "The answer shape is always C's shape (par.shape_d == shape_c), so only the style is graded. Styles are visible in the top-right shape B: render stroke width 2 = thin_outline, 4 = outline/solid_outline, 8 = very_thick_outline, dash [5,3] = dashed, dash [2,2] = dotted, fill = filled. GT style_to on the 5 samples: thin_outline, dashed_outline, dotted_outline, very_thick_outline, dashed_outline. 'solid_outline' renders like 'outline' (4 px solid), hence the alias."
+ },
+ {
+  "task": "O-12_shape_color_then_scale_data-generator",
+  "split": "In-Domain_50",
+  "class": "selection_marking",
+  "prompt_specified": true,
+  "include": true,
+  "exclude_reason": null,
+  "answer_key": "final",
+  "answer_format": "final: {\"color\": [R, G, B] integers 0-255 of the final bottom-row shape after both steps, \"size\": its final size name as used in the prompt}",
+  "answer_example": {
+   "final": {
+    "color": [
+     128,
+     128,
+     128
+    ],
+    "size": "medium"
+   }
+  },
+  "comparator": {
+   "type": "fields_exact",
+   "fields": {
+    "color": {
+     "gt": "sgt.colors.to_rgb",
+     "cmp": "rgb_tol",
+     "tol": 30
+    },
+    "size": {
+     "gt": "sgt.scales.to_name",
+     "cmp": "str"
+    }
+   }
+  },
+  "notes": "The prompt names both target values (color token and size name), so prompt_specified; the only perception is mapping the color token to RGB, which is shown by top-row B/C (first_frame.png pixels at B equal sgt.colors.to_rgb on samples 0-2 and 4; sample 3's L-shape has a white center pixel). E and F are gray placeholders."
+ },
+ {
+  "task": "O-13_shape_outline_then_move_data-generator",
+  "split": "In-Domain_50",
+  "class": "continuous",
+  "prompt_specified": false,
+  "include": true,
+  "exclude_reason": null,
+  "answer_key": "final_center",
+  "answer_format": "final_center: [x, y] center of the final bottom-row shape (F) after both steps, in pixel coordinates in the first frame (origin top-left, x to the right, y down)",
+  "answer_example": {
+   "final_center": [
+    300,
+    300
+   ]
+  },
+  "comparator": {
+   "type": "point_tol",
+   "gt": "sgt.objects[5].center",
+   "tol": 25
+  },
+  "notes": "sgt.objects is ordered A,B,C,D,E,F on all 5 samples (symbols and centers), so objects[5] is F; F = column x 764 with y = D's y + the top-row C-B displacement (0, 60 or 100 px here). Render centroid of F is within 8 px of the metadata center. tol 25 separates 0/60/100 px moves. The prompt states direction but not the amount (taken from the example row), so not prompt_specified. Outline style is not graded."
+ },
+ {
+  "task": "O-14_shape_scale_then_outline_data-generator",
+  "split": "In-Domain_50",
+  "class": "continuous",
+  "prompt_specified": false,
+  "include": true,
+  "exclude_reason": null,
+  "answer_key": "final_shape",
+  "answer_format": "final_shape: {\"size_ratio\": number, \"style_change\": string} for the bottom-right \"?\" (result of both steps): size_ratio = its width / the width of the given bottom-left shape; style_change vs that shape is one of \"filled\" (becomes solid), \"outline\" (solid becomes outline-only), \"thicker_outline\", \"thinner_outline\"; copy both changes from the top example row",
+  "answer_example": {
+   "final_shape": {
+    "size_ratio": 1.5,
+    "style_change": "filled"
+   }
+  },
+  "comparator": {
+   "type": "custom",
+   "description": "Two checks on ANSWER.final_shape. (1) size: abs(size_ratio - R) <= size_tol, where R = sgt.scales.to_factor / sgt.scales.from_factor (linear scale of the final shape F relative to D). (2) style: normalize(style_change) == S (normalization as str_exact), where with f = sgt.styles.from_name, t = sgt.styles.to_name and outline rank {thin_outline: 1, outline: 2, thick_outline: 3}: t == \"filled\" -> S = \"filled\"; f == \"filled\" -> S = \"outline\"; rank(t) > rank(f) -> S = \"thicker_outline\"; otherwise S = \"thinner_outline\". Correct iff both pass.",
+   "size_ratio_numerator": "sgt.scales.to_factor",
+   "size_ratio_denominator": "sgt.scales.from_factor",
+   "size_tol": 0.1,
+   "from_style": "sgt.styles.from_name",
+   "to_style": "sgt.styles.to_name",
+   "outline_rank": {
+    "thin_outline": 1,
+    "outline": 2,
+    "thick_outline": 3
+   }
+  },
+  "notes": "Analogy A->B->C :: D->?->?; only the final shape F (bottom-right ?) is graded, and it covers both steps. GT per sample: 00000 0.842/outline, 00001 1.231/thicker_outline, 00002 0.800/filled, 00003 0.800/thinner_outline, 00004 0.684/thinner_outline. Scale is linear: gdr polygon widths 00000 hexagon 192->162 px (0.844 vs 1.6/1.9), 00003 diamond 102->80, 00004 arrow 192->132. Outline rank taken from gdr stroke_width_px: thin_outline 2, outline 4, thick_outline 6. Style names are not in the image, so the answer uses a relative style change. Prompt wording does not match the example row: 00002 says \"fill-to-outline\" but the row shows thick_outline->filled, and 00001/00003/00004 are thickness changes. That is why answer_format says to follow the example row. prompt_specified=false: the prompt names only the generic transformation, not the scale or style."
+ },
+ {
+  "task": "O-15_ball_bounces_given_time_data-generator",
+  "split": "In-Domain_50",
+  "class": "continuous",
+  "prompt_specified": false,
+  "include": true,
+  "exclude_reason": null,
+  "answer_key": "final_position",
+  "answer_format": "final_position: [x, y] pixel coordinates of the ball center where it stops, at the wall of its last bounce (origin top-left, x to the right, y downward; the image is 1024x1024)",
+  "answer_example": {
+   "final_position": [
+    512.0,
+    300.0
+   ]
+  },
+  "comparator": {
+   "type": "point_tol",
+   "gt": "sgt.objects[0].final_center",
+   "tol": 40
+  },
+  "notes": "final_center equals the last sgt.bounce_events entry (x,y) in all 5 samples; it is the ball center, one radius (30 px) inside the wall line (bounds 60..964). final_frame.png shows the ball at that point (00000: (194.7, 90)). tol 40 px because the direction must be read off the arrow and errors grow over up to 6 bounces. prompt_specified=false: the prompt gives the bounce count, not the endpoint."
+ },
+ {
+  "task": "O-16_color_addition_data-generator",
+  "split": "In-Domain_50",
+  "class": "continuous",
+  "prompt_specified": false,
+  "include": true,
+  "exclude_reason": null,
+  "answer_key": "merged_rgb",
+  "answer_format": "merged_rgb: [R, G, B] integers 0-255, the color of the single merged ball in the final state",
+  "answer_example": {
+   "merged_rgb": [
+    10,
+    200,
+    90
+   ]
+  },
+  "comparator": {
+   "type": "rgb_tol",
+   "gt": "sgt.color_mixing_model.final_single_disk_rgb",
+   "tol": 40
+  },
+  "notes": "The pixel colors at the two ball centers in first_frame.png equal sgt.balls[0..1].rgb exactly. The GT is the per-channel sum, with no channel over 255 in these 5 samples; the final_frame pixel at the merge center equals the GT. tol 40: the wrong channel-average answer is at least 74 away on some channel in every sample. prompt_specified=false: the prompt names the mixing rule, not the color."
+ },
+ {
+  "task": "O-18_glass_refraction_data-generator",
+  "split": "In-Domain_50",
+  "class": "continuous",
+  "prompt_specified": false,
+  "include": true,
+  "exclude_reason": null,
+  "answer_key": "refraction_angle_deg",
+  "answer_format": "refraction_angle_deg: number, the angle of the red refracted ray inside the glass measured from the normal (the vertical line), in degrees",
+  "answer_example": {
+   "refraction_angle_deg": 12.5
+  },
+  "comparator": {
+   "type": "num_tol",
+   "gt": "sgt.physics.theta_refracted_degrees_expected",
+   "tol": 1.0
+  },
+  "notes": "GT = asin(sin(theta_i)/n_glass). Recomputing from the rounded prompt values (e.g. 69.8 deg, 1.850) matches the GT within 0.05 deg on all 5. The incident ray always comes from the upper left and hits (512,512); the refracted ray continues down and to the right. tol 1.0 deg: no-refraction answers fail everywhere, and theta_i/n fails in 4/5 (it passes 00002 only, where the small-angle approximation is within 0.54 deg). prompt_specified=false: the prompt gives the inputs, not the angle."
+ },
+ {
+  "task": "O-19_mirror_reflection_data-generator",
+  "split": "In-Domain_50",
+  "class": "continuous",
+  "prompt_specified": false,
+  "include": true,
+  "exclude_reason": null,
+  "answer_key": "exit_point",
+  "answer_format": "exit_point: [x, y] pixel coordinates where the red reflected ray meets the image border (origin top-left, x to the right, y downward; the image is 1024x1024)",
+  "answer_example": {
+   "exit_point": [
+    0.0,
+    200.0
+   ]
+  },
+  "comparator": {
+   "type": "point_tol",
+   "gt": "sgt.objects[1].end",
+   "tol": 40
+  },
+  "notes": "sgt.objects[1] is the reflected ray: start = [hit_x_px, mirror_y_px], and end lies on the image border (y=0 or x=1024). The end is recomputed from the incident direction mirrored about the vertical normal and matches within 1 px on all 5. The first frame labels the angle as a rounded integer (00003 shows \"theta = 55\" for 55.41); rounding moves the endpoint by less than 10 px. final_frame.png 00003 shows the red ray reaching the right border near y=24. prompt_specified=false."
+ },
+ {
+  "task": "O-21_construction_blueprint_data-generator",
+  "split": "In-Domain_50",
+  "class": "selection_marking",
+  "prompt_specified": false,
+  "include": true,
+  "exclude_reason": null,
+  "answer_key": "candidate",
+  "answer_format": "candidate: integer label (1-4) printed on the candidate box whose piece exactly fills the dashed gap; the boxes are labeled 1-4 from left to right",
+  "answer_example": {
+   "candidate": 2
+  },
+  "comparator": {
+   "type": "int_exact",
+   "gt": "sgt.correct_candidate_index",
+   "offset": 1
+  },
+  "notes": "correct_candidate_index is 0-based in left-to-right order: sgt.layout_objects.candidates[i].center x = 142, 388, 634, 880 for i = 0..3. first_frame.png (00000) prints labels 1-4 left to right, so the answer uses the visible label, offset +1. The GT is label 4 (the rightmost box) in all 5 samples. prompt_specified=false."
+ },
+ {
+  "task": "O-23_domino_chain_branch_path_prediction_data-generator",
+  "split": "In-Domain_50",
+  "class": "multi_object_discrete",
+  "prompt_specified": true,
+  "include": true,
+  "exclude_reason": null,
+  "answer_key": "standing",
+  "answer_format": "standing: list of the labels printed on the dominos (e.g. \"B3\") of every domino still standing at the end; [] if all dominos fall",
+  "answer_example": {
+   "standing": [
+    "T2"
+   ]
+  },
+  "comparator": {
+   "type": "set_exact",
+   "gt": "sgt.standing_ids"
+  },
+  "notes": "Domino labels (START, T1.., A1.., B1..) are printed on the dominos in first_frame.png (00004), and the red X gap is visible. GT is [] in 00000, 00002 and 00003, [\"B2\"] in 00001, and [\"A3\",\"A4\"] in 00004; final_frame.png 00004 shows A3 and A4 upright. prompt_specified=true: the prompt states whether both branches complete and which branch is blocked; only the dominos after the X must be read from the image."
+ },
+ {
+  "task": "O-24_domino_chain_gap_analysis_data-generator",
+  "split": "In-Domain_50",
+  "class": "selection_marking",
+  "prompt_specified": false,
+  "include": true,
+  "exclude_reason": null,
+  "answer_key": "last_fallen",
+  "answer_format": "last_fallen: integer, the number printed on the last domino that falls (dominos are numbered from 1 at the pushed left end)",
+  "answer_example": {
+   "last_fallen": 7
+  },
+  "comparator": {
+   "type": "int_exact",
+   "gt": "sgt.answer"
+  },
+  "notes": "sgt.answer is 1-indexed and equals last_fallen_index+1 and par.answer_kinematic; the objects flagged is_last_fallen carry the same index. first_frame.png (00003) prints the numbers 1..12 left to right, with the wide gap after 5 (GT 5). prompt_specified=false."
+ },
+ {
+  "task": "O-25_LEGO_construction_assembly_data-generator",
+  "split": "In-Domain_50",
+  "class": "selection_marking",
+  "prompt_specified": true,
+  "include": true,
+  "exclude_reason": null,
+  "answer_key": "brick_center",
+  "answer_format": "brick_center: [x, y] pixel coordinates of the center of the new brick's bounding box after it snaps into place (origin top-left, x to the right, y downward; the image is 1024x1024)",
+  "answer_example": {
+   "brick_center": [
+    300.0,
+    700.0
+   ]
+  },
+  "comparator": {
+   "type": "point_tol",
+   "gt": "sgt.objects[par.new_brick_index].center_2d",
+   "tol": 40
+  },
+  "notes": "par.new_brick_index points at the object with is_new=true in all 5 samples. center_2d equals, within 1 px, the bounding-box center of the new brick's color region in final_frame.png for all 5 (including 00002 stacked at z=3 and 00004 a 1x1 brick). The dashed red ghost in first_frame.png has the same bounding box. prompt_specified=true: the prompt says to attach the brick at the arrowed position, and the image draws that destination."
+ },
+ {
+  "task": "O-29_ballcolor_data-generator",
+  "split": "In-Domain_50",
+  "class": "multi_object_discrete",
+  "prompt_specified": false,
+  "include": true,
+  "exclude_reason": null,
+  "answer_key": "absorb_order",
+  "answer_format": "absorb_order: list of cluster letters as labeled in the image (e.g. \"C\"), in the order the red cluster A absorbs them; list every other cluster exactly once",
+  "answer_example": {
+   "absorb_order": [
+    "D",
+    "B"
+   ]
+  },
+  "comparator": {
+   "type": "custom",
+   "description": "Validity check by simulation. Let L = sgt.objects[*].cluster_id_letter, S = sgt.objects[*].initial_size, and let the red cluster be the object with is_red == true (always index 0, letter A). Normalize answer letters to upper case. Correct iff the answer is a permutation of the non-red letters and, starting from size = S[red], every step passes: S[letter] < size (strict), then size += S[letter]. One valid order is sgt.merge_sequence[*].target_id_letter; others (e.g. 00003 [C, B]) are also correct.",
+   "letters": "sgt.objects[*].cluster_id_letter",
+   "sizes": "sgt.objects[*].initial_size",
+   "is_red": "sgt.objects[*].is_red",
+   "reference_order": "sgt.merge_sequence[*].target_id_letter"
+  },
+  "notes": "Labels like \"A: 11\", \"B: 4\" are printed next to each cluster in first_frame.png (00003). list_exact would reject valid orders: in 00003 (A=11, B=4, C=10) both [B,C] and [C,B] satisfy the rule, so the check simulates the rule instead. In the other 4 samples the valid order is unique. prompt_specified=false."
+ },
+ {
+  "task": "O-30_bookshelf_data-generator",
+  "split": "In-Domain_50",
+  "class": "multi_object_discrete",
+  "prompt_specified": false,
+  "include": true,
+  "exclude_reason": null,
+  "answer_key": "gaps",
+  "answer_format": "gaps: one integer per waiting colored book, listed left to right as they wait on the right; each is the number of the gap that book goes into, with the empty shelf gaps numbered 1, 2, 3, ... from left to right",
+  "answer_example": {
+   "gaps": [
+    2,
+    1
+   ]
+  },
+  "comparator": {
+   "type": "custom",
+   "description": "Let H = sgt.red_heights (heights of the new books by internal id r), Q = sgt.red_queue_order (ids of the waiting books from left to right), P[r] = sgt.insertion_indices[str(r)] (keys are strings). Gap rank of r: rank(r) = 1 + #{r2 : P[r2] < P[r]}; g(j) = the id r with rank(r) == j. Reference answer = [rank(Q[k]) for k]. Correct iff len(answer) == len(Q), answer is a permutation of 1..len(Q), and for every k: abs(H[Q[k]] - H[g(answer[k])]) <= height_tol. Books whose heights differ by <= 1.0 metadata unit (about 1.5 px) are interchangeable.",
+   "heights": "sgt.red_heights",
+   "queue_order": "sgt.red_queue_order",
+   "insertion_indices": "sgt.insertion_indices",
+   "height_tol": 1.0
+  },
+  "notes": "Reference answers: 00000 [1,4,3,2], 00001 [2,1,3], 00002 [1,2], 00003 [1,2], 00004 [1,4,2,3]. The waiting-book x positions (objects[type=new].initial_center) sort to red_queue_order in all 5. Gap ranks follow the layout_snapshot gap positions (00004 gaps left to right hold red ids 0,2,1,3, so red id order is not gap order). 00004 has two new books with heights 105.68 and 105.80 that render at the same 158 px height, so a swap between them is accepted (1 metadata unit is about 1.5 px: measured 139 px for height 93.09). In 00000 the 93.09 and 94.90 books (139 vs 142 px) must not be swapped. prompt_specified=false."
+ },
+ {
+  "task": "O-31_ball_eating_data-generator",
+  "split": "In-Domain_50",
+  "class": "multi_object_discrete",
+  "prompt_specified": false,
+  "include": true,
+  "exclude_reason": null,
+  "answer_key": "eat_order",
+  "answer_format": "eat_order: list of [x, y] pixel centers of the colored balls in the order the black ball eats them, every colored ball exactly once (origin top-left, x to the right, y downward; the image is 1024x1024)",
+  "answer_example": {
+   "eat_order": [
+    [
+     100.0,
+     100.0
+    ],
+    [
+     900.0,
+     900.0
+    ]
+   ]
+  },
+  "comparator": {
+   "type": "custom",
+   "description": "Ordered point list validated by simulation. Let C[p] = [sgt.prey_balls[p].x, sgt.prey_balls[p].y], D[p] = sgt.prey_balls[p].size (diameter), d = sgt.black_ball.size, g = sgt.growth_factor. Map each answer point to its nearest prey center; it must lie within D[p]/2 + 30 px. Correct iff the mapped prey are distinct and cover all prey, and for each mapped prey p in answer order: D[p] < d (strict), then d = d * g. One valid order is sgt.eating_sequence (prey ids).",
+   "prey_centers": {
+    "path": "sgt.prey_balls[*]",
+    "point_keys": [
+     "x",
+     "y"
+    ]
+   },
+   "prey_sizes": "sgt.prey_balls[*].size",
+   "black_size": "sgt.black_ball.size",
+   "growth_factor": "sgt.growth_factor",
+   "match_margin_px": 30,
+   "reference_order": "sgt.eating_sequence"
+  },
+  "notes": "Colors repeat (two yellow balls in 00003 and 00004), so the answer uses points instead of names. 00004 has two prey of equal diameter 198, which can be eaten in either order, so the check simulates instead of using list_exact. prey_balls[p].id == p in all 5; sizes are diameters (00004 black ball about 82 px wide in first_frame.png). The growth factor (1.5) is not stated in the prompt; ascending size order is valid in every sample. prompt_specified=false."
+ },
+ {
+  "task": "O-32_rolling_ball_data-generator",
+  "split": "In-Domain_50",
+  "class": "single_agent_path",
+  "prompt_specified": true,
+  "include": true,
+  "exclude_reason": null,
+  "answer_key": "final_position",
+  "answer_format": "final_position: [x, y] pixel coordinates of the ball center when it comes to rest (origin top-left, x to the right, y downward; the image is 1024x1024)",
+  "answer_example": {
+   "final_position": [
+    500.0,
+    500.0
+   ]
+  },
+  "comparator": {
+   "type": "custom",
+   "description": "point_tol against a third root: GT = [cx_px, cy_px] of the single layer in generic_declarative_render.final_frame.layers with type == \"filled_shape\" and kind == \"circle\" (the ball; its fill_rgb equals sgt.objects[0].color). Correct iff Euclidean distance(answer, GT) <= tol (40 px). sgt/par only hold 3D coordinates (sgt.objects[0].final_center_3d), so the pixel GT must come from the declarative render.",
+   "gt_root": "generic_declarative_render.final_frame.layers",
+   "gt_layer_filter": {
+    "type": "filled_shape",
+    "kind": "circle"
+   },
+   "gt_point_keys": [
+    "cx_px",
+    "cy_px"
+   ],
+   "tol": 40
+  },
+  "notes": "The final-frame layers contain exactly one filled circle (the ball) in all 5 samples, and final_frame.png has the ball color at that pixel. The ball ends on the far end of the platform chain (00000: first frame (368,592), final (654,432)). Included because a checkable final state exists. prompt_specified=true: the prompt says the ball comes to rest on the final platform; only its location must be read from the image."
+ },
+ {
+  "task": "O-33_counting_object_data-generator",
+  "split": "In-Domain_50",
+  "class": "selection_marking",
+  "prompt_specified": false,
+  "include": true,
+  "exclude_reason": null,
+  "answer_key": "count",
+  "answer_format": "count: integer, the total number of objects in the scene",
+  "answer_example": {
+   "count": 12
+  },
+  "comparator": {
+   "type": "int_exact",
+   "gt": "sgt.expected_object_count"
+  },
+  "notes": "expected_object_count == len(sgt.objects) == par.num_objects in all 5. first_frame.png (00000) shows 10 separate outlined shapes with no overlap. prompt_specified=false."
+ },
+ {
+  "task": "O-34_dot_to_dot_task_data-generator",
+  "split": "In-Domain_50",
+  "class": "single_agent_path",
+  "prompt_specified": true,
+  "include": true,
+  "exclude_reason": null,
+  "answer_key": "path",
+  "answer_format": "path: list of [x, y] pixel centers of the dots in the order they are connected, starting at dot 1 (origin top-left, x to the right, y downward; the image is 1024x1024)",
+  "answer_example": {
+   "path": [
+    [
+     100.0,
+     100.0
+    ],
+    [
+     300.0,
+     800.0
+    ]
+   ]
+  },
+  "comparator": {
+   "type": "custom",
+   "description": "Ordered point list. Let G = sgt.objects[*].center, where objects are stored in number order (sgt.objects[i].number == i+1). Correct iff len(answer) == len(G) and, for every i, Euclidean distance(answer[i], G[i]) <= max_px (75 = dot radius 45 + 30).",
+   "points": "sgt.objects[*].center",
+   "numbers": "sgt.objects[*].number",
+   "max_px": 75
+  },
+  "notes": "objects[i].number == i+1 and connection_order == [0..n-1] in all 5, and the number is printed on each dot. point_set_tol would ignore the order, so an ordered per-point check is used. prompt_specified=true: the prompt fixes the order 1->2->...->N; only the dot positions must be read."
+ },
+ {
+  "task": "O-36_grid_shift_data-generator",
+  "split": "In-Domain_50",
+  "class": "multi_object_discrete",
+  "prompt_specified": true,
+  "include": true,
+  "exclude_reason": null,
+  "answer_key": "blocks",
+  "answer_format": "blocks: list of every block cell after the move, each as [row, col] (row 0 = top row, col 0 = leftmost column), in any order",
+  "answer_example": {
+   "blocks": [
+    [
+     0,
+     1
+    ],
+    [
+     4,
+     2
+    ]
+   ]
+  },
+  "comparator": {
+   "type": "set_exact",
+   "gt": "par.shifted_positions"
+  },
+  "notes": "Metadata stores cells as [row, col]. Shift deltas are right (0,+2), left (0,-2), down (+1,0), (+3,0), and up (-1,0). A pixel check at cell centers x=(col+.5)*1024/g, y=(row+.5)*1024/g matches the block color for 27/27, 4/4, 10/10, 55/55 and 82/82 cells in both first and final frames; the transposed reading does not match. The answer asks for [row, col] to match the stored convention. prompt_specified=true: direction and step count are in the prompt."
+ },
+ {
+  "task": "O-37_light_sequence_data-generator",
+  "split": "In-Domain_50",
+  "class": "multi_object_discrete",
+  "prompt_specified": true,
+  "include": true,
+  "exclude_reason": null,
+  "answer_key": "final_states",
+  "answer_format": "final_states: list of 0/1 integers, one per light from left to right (1 = on, 0 = off)",
+  "answer_example": {
+   "final_states": [
+    1,
+    0,
+    0,
+    1
+   ]
+  },
+  "comparator": {
+   "type": "list_exact",
+   "gt": "par.final_states"
+  },
+  "notes": "par.final_states matches par.final_state (string) and the prompt rule (6th / odd positions / 2nd-4th / leftmost 3 / 3rd) in all 5. Index 0 is the leftmost light. prompt_specified=true: the prompt states which lights end up on."
+ },
+ {
+  "task": "O-38_majority_color_data-generator",
+  "split": "In-Domain_50",
+  "class": "selection_marking",
+  "prompt_specified": false,
+  "include": true,
+  "exclude_reason": null,
+  "answer_key": "majority",
+  "answer_format": "majority: {\"color\": basic color name of the most frequent object color, \"count\": integer number of objects of that color}",
+  "answer_example": {
+   "majority": {
+    "color": "blue",
+    "count": 6
+   }
+  },
+  "comparator": {
+   "type": "fields_exact",
+   "fields": {
+    "color": {
+     "gt": "par.majority_color_name",
+     "cmp": "str"
+    },
+    "count": {
+     "gt": "par.majority_count",
+     "cmp": "exact"
+    }
+   }
+  },
+  "notes": "Object colors are pure RGB primaries (red/green/blue/yellow/magenta), easy to name. The majority is red in all 5 samples (counts 8, 8, 10, 8, 10 of 15), so the count field is what separates the samples. The counts were recomputed from par.objects[*].color_name. Fields are sub-keys of ANSWER.majority. prompt_specified=false."
+ },
+ {
+  "task": "O-44_rotation_puzzle_data-generator",
+  "split": "In-Domain_50",
+  "class": "multi_object_discrete",
+  "prompt_specified": false,
+  "include": true,
+  "exclude_reason": null,
+  "answer_key": "pipes",
+  "answer_format": "pipes: list of 4 objects for the tiles in order [top-left, top-right, bottom-left, bottom-right], each {\"top\": bool, \"right\": bool, \"bottom\": bool, \"left\": bool} marking which tile edges the pipe reaches in the solved state",
+  "answer_example": {
+   "pipes": [
+    {
+     "top": true,
+     "right": true,
+     "bottom": false,
+     "left": false
+    },
+    {
+     "top": true,
+     "right": true,
+     "bottom": false,
+     "left": false
+    },
+    {
+     "top": true,
+     "right": true,
+     "bottom": false,
+     "left": false
+    },
+    {
+     "top": true,
+     "right": true,
+     "bottom": false,
+     "left": false
+    }
+   ]
+  },
+  "comparator": {
+   "type": "list_exact",
+   "gt": "par.objects[*].pipe_pattern"
+  },
+  "notes": "par.objects are ordered TL, TR, BL, BR (centers (387,387), (637,387), (387,637), (637,637)). The GT is the same closed ring in all 5 samples: TL right+bottom, TR bottom+left, BL top+right, BR top+left, as in final_frame.png 00000. Only the initial pipe angles vary (initial_angle is clockwise on screen: 00000 TR 294 renders as the target pattern turned 66 deg counter-clockwise). An open-path layout with two ends at the outer border would also be one path but fails this check. prompt_specified=false."
+ },
+ {
+  "task": "O-45_sequence_completion_data-generator",
+  "split": "In-Domain_50",
+  "class": "selection_marking",
+  "prompt_specified": false,
+  "include": true,
+  "exclude_reason": null,
+  "answer_key": "same_as",
+  "answer_format": "same_as: integer position (1 = leftmost) of an earlier element in the row that is identical to the element that should replace the \"?\"",
+  "answer_example": {
+   "same_as": 1
+  },
+  "comparator": {
+   "type": "custom",
+   "description": "Let V = sgt.objects[*].value, a = sgt.answer_index (0-based position of the ?), v = sgt.answer_value. Correct iff answer is an integer with 1 <= answer <= a and V[answer-1] deep-equals v (JSON equality; RGB lists or shape strings). Any earlier copy of the answer element is accepted.",
+   "values": "sgt.objects[*].value",
+   "answer_index": "sgt.answer_index",
+   "answer_value": "sgt.answer_value"
+  },
+  "notes": "The task mixes color_cycle (00000, 00001, 00003) and shape_cycle (00002, 00004), and the shape values are glyphs (\"⬤\", \"⬣\", \"star\") that a model cannot name reliably, so the answer points to an earlier identical element. The cycle is always fully shown before the ?. In 00002 the glyphs \"●\" and \"○\" render as the same circle and \"⬤\" as an octagon (first_frame.png). The GT is the octagon, so this rendering quirk does not change the grade. prompt_specified=false."
+ },
+ {
+  "task": "O-47_sliding_puzzle_data-generator",
+  "split": "In-Domain_50",
+  "class": "multi_object_discrete",
+  "prompt_specified": false,
+  "include": true,
+  "exclude_reason": null,
+  "answer_key": "moves",
+  "answer_format": "moves: list of blank-space moves in order, each \"up\", \"down\", \"left\" or \"right\" (the direction the empty cell moves; the tile on that side slides into it); use exactly the number of moves stated in the prompt",
+  "answer_example": {
+   "moves": [
+    "left",
+    "up"
+   ]
+  },
+  "comparator": {
+   "type": "sliding_moves",
+   "initial": "par.initial_state",
+   "required_len": "sgt.solution_length",
+   "move_semantics": "blank_moves",
+   "gt_moves": "sgt.solution_blank_moves"
+  },
+  "notes": "par.initial_state is [row][col] with 0 = blank and matches first_frame.png 00000 (5 1 3 / _ 7 6 / 2 4 8). Replaying sgt.solution_blank_moves (\"down\" = blank row+1) reproduces par.states step by step and ends at par.goal_state [[1,2,3],[4,5,6],[7,8,0]]. required_len 11 equals the prompt move count in all 5. prompt_specified=false."
+ },
+ {
+  "task": "O-52_traffic_light_data-generator",
+  "split": "In-Domain_50",
+  "class": "multi_object_discrete",
+  "prompt_specified": false,
+  "include": true,
+  "exclude_reason": null,
+  "answer_key": "final",
+  "answer_format": "final: {\"states\": [...], \"countdowns\": [...]}, each ordered [North, South, East, West]; state \"red\"/\"yellow\"/\"green\", countdown in whole seconds; null and 0 for a direction with no light; a light that starts yellow turns red next",
+  "answer_example": {
+   "final": {
+    "states": [
+     "green",
+     "red",
+     null,
+     "yellow"
+    ],
+    "countdowns": [
+     1,
+     2,
+     0,
+     4
+    ]
+   }
+  },
+  "comparator": {
+   "type": "fields_exact",
+   "fields": {
+    "states": {
+     "gt": "sgt.objects[*].final_state",
+     "cmp": "list"
+    },
+    "countdowns": {
+     "gt": "sgt.objects[*].final_countdown",
+     "cmp": "list"
+    }
+   }
+  },
+  "notes": "sgt.objects are ordered north, south, east, west in all 5. 00003 has no south light (state null, countdown 0). A per-second simulation (at countdown 0 switch to the next color with countdown 4) reproduces all 19 active lights, but only if a light that starts yellow turns red next. 4 lights depend on that choice (00000 East, 00002 South, 00004 South and West), so answer_format states it. Fields are sub-keys of ANSWER.final. prompt_specified=false."
+ },
+ {
+  "task": "O-53_clock_data-generator",
+  "split": "In-Domain_50",
+  "class": "continuous",
+  "prompt_specified": false,
+  "include": true,
+  "exclude_reason": null,
+  "answer_key": "time",
+  "answer_format": "time: string \"H:MM\", the time the 12-hour dial shows after the given hours pass (hour 1-12 without a leading zero, minutes as two digits)",
+  "answer_example": {
+   "time": "4:07"
+  },
+  "comparator": {
+   "type": "str_exact",
+   "gt": "sgt.final_time"
+  },
+  "notes": "sgt.final_time uses the \"H:MM\" 12-hour form (12:44, 9:04, 11:36, 3:05, 9:00); sgt.final_hour uses 0 for 12, so the string field is used. final_minute == initial_minute. Format sensitivity: str_exact rejects \"03:05\", \"0:44\" or \"12:44 PM\" although they show the same dial state; the grader may normalize (parse H:MM, compare hour mod 12 and minute) if that is preferred. prompt_specified=false: the prompt gives the start time and the hours to add, not the result."
+ },
+ {
+  "task": "O-55_rotation_data-generator",
+  "split": "In-Domain_50",
+  "class": "no_answer",
+  "prompt_specified": true,
+  "include": false,
+  "exclude_reason": "Pure camera-orbit animation: the prompt fixes the final view (elevation and azimuth), there is no decision to state, and the only final state is a rendered 3D view with no symbolic value in the metadata that a text answer could be checked against.",
+  "answer_key": null,
+  "answer_format": null,
+  "answer_example": null,
+  "comparator": null,
+  "notes": "Excluded. The prompt states the final camera pose (same elevation, azimuth +180 deg). The final frame is a 3D render of the unchanged voxel sculpture; sgt only holds 3D voxel positions and view angles, with no 2D projection or discrete outcome to check."
+ },
+ {
+  "task": "O-75_communicating_vessels_data-generator",
+  "split": "In-Domain_50",
+  "class": "continuous",
+  "prompt_specified": true,
+  "include": true,
+  "exclude_reason": null,
+  "answer_key": "final_level_cm",
+  "answer_format": "final_level_cm: number, the common liquid level of all tubes at equilibrium, in cm",
+  "answer_example": {
+   "final_level_cm": 12.0
+  },
+  "comparator": {
+   "type": "num_tol",
+   "gt": "sgt.equilibrium_level_cm",
+   "tol": 1.5
+  },
+  "notes": "equilibrium_level_cm is an int truncated from the mean of the internal levels (00001: 27.8 -> 27). The mean of the prompt cm values differs by <= 0.6 (27.6, 31.5, 28.0, 34.67, 50.0), and tol 1.5 also covers rounding. The median is at least 2 cm off in every sample. prompt_specified=true: the prompt says the final level equals the average of the listed initial heights."
+ },
+ {
+  "task": "G-135_select_next_figure_small_large_alternating_sequence_data-generator",
+  "split": "Out-of-Domain_50",
+  "class": "selection_marking",
+  "prompt_specified": false,
+  "include": true,
+  "exclude_reason": null,
+  "answer_key": "option",
+  "answer_format": "option: integer index of the chosen bottom option, 0-based, the 4 options numbered 0-3 from left to right",
+  "answer_example": {
+   "option": 1
+  },
+  "comparator": {
+   "type": "int_exact",
+   "gt": "sgt.correct_option_index",
+   "offset": 0
+  },
+  "notes": "sgt.candidates order equals the left-to-right order of the 4 bottom cards: generic_declarative_render draws candidate k at card x=166+230k with the same kind/fill as sgt.candidates[k] (5/5 samples); image 00001 shows option 0 = large navy square = GT 0. Always 4 options."
+ },
+ {
+  "task": "G-136_locate_point_in_overlapping_area_data-generator",
+  "split": "Out-of-Domain_50",
+  "class": "selection_marking",
+  "prompt_specified": false,
+  "include": true,
+  "exclude_reason": null,
+  "answer_key": "points",
+  "answer_format": "points: list of [x, y] centers of every dot lying fully inside the overlap of the two shapes, one entry per dot, any order; pixel coordinates on the 1024x1024 image (origin top-left, x right, y down)",
+  "answer_example": {
+   "points": [
+    [
+     120,
+     880
+    ],
+    [
+     900,
+     140
+    ]
+   ]
+  },
+  "comparator": {
+   "type": "point_set_nearest",
+   "candidates": "sgt.all_points",
+   "target_points": "sgt.target_points",
+   "max_px": 36
+  },
+  "notes": "Points are [x,y]: sgt.all_points match render circle cx_px/cy_px, and image 00001 shows the 2 GT dots (597,456),(671,416) inside the overlap. Every target point is an exact member of sgt.all_points (5/5); the nearest non-target dot is >=58 px from a target. max_px = dot radius 6 + 30. 2 targets per sample; up to 187 dots."
+ },
+ {
+  "task": "G-140_locate_topmost_unobscured_figure_data-generator",
+  "split": "Out-of-Domain_50",
+  "class": "selection_marking",
+  "prompt_specified": false,
+  "include": true,
+  "exclude_reason": null,
+  "answer_key": "centroid",
+  "answer_format": "centroid: [x, y] of the centroid of the topmost shape, computed as the mean of its corner points; pixel coordinates on the 1024x1024 image (origin top-left, x right, y down)",
+  "answer_example": {
+   "centroid": [
+    700,
+    820
+   ]
+  },
+  "comparator": {
+   "type": "point_tol",
+   "gt": "sgt.topmost_centroid_xy",
+   "tol": 25
+  },
+  "notes": "Shape indices are internal render order (topmost = last drawn), not viewer-visible, and metadata has no per-shape centroid list, so point_nearest is impossible; point_tol on sgt.topmost_centroid_xy, which equals the vertex mean of par.shapes[target_shape_index].exterior_xy (5/5). Nearest competing vertex-mean centroid is 50.7 px away (00000, navy triangle almost fully hidden under the cyan one; its centroid lies inside the cyan triangle, so point-in-polygon would pass it), hence tol 25 < 50.7/2. A triangle's bbox centre is up to 44 px from its vertex mean, hence the explicit centroid definition. Pixel at GT centroid has the topmost fill colour (5/5)."
+ },
+ {
+  "task": "G-147_identify_unique_figure_in_uniform_set_data-generator",
+  "split": "Out-of-Domain_50",
+  "class": "selection_marking",
+  "prompt_specified": false,
+  "include": true,
+  "exclude_reason": null,
+  "answer_key": "point",
+  "answer_format": "point: [x, y] of the center of the one shape that differs from the others; pixel coordinates on the 1024x1024 image (origin top-left, x right, y down)",
+  "answer_example": {
+   "point": [
+    100,
+    950
+   ]
+  },
+  "comparator": {
+   "type": "point_nearest",
+   "candidates": "par.shapes[*].center_xy",
+   "target_index": "sgt.unique_index",
+   "max_px": 100
+  },
+  "notes": "par.shapes[*].center_xy are [x,y] (render circle cx_px/cy_px and rect x+w/2,y+h/2 match); sgt.unique_index indexes par.shapes and sgt.unique_center_xy == par.shapes[unique_index].center_xy (5/5). Shapes >=174 px apart; max_px = largest unique-shape half-extent 68 (00000 rectangle 91x136) + 30."
+ },
+ {
+  "task": "G-160_circle_largest_numerical_value_data-generator",
+  "split": "Out-of-Domain_50",
+  "class": "selection_marking",
+  "prompt_specified": false,
+  "include": true,
+  "exclude_reason": null,
+  "answer_key": "value",
+  "answer_format": "value: the integer value of the largest number shown",
+  "answer_example": {
+   "value": 42
+  },
+  "comparator": {
+   "type": "int_exact",
+   "gt": "sgt.largest_value",
+   "offset": 0
+  },
+  "notes": "The maximum is strictly unique in all 5 samples (00001 has a duplicate 83, but the max 87 is unique), so the value identifies the number to circle without pixel tolerance. Wrong answer tested: second-largest value."
+ },
+ {
+  "task": "G-161_mark_second_largest_shape_data-generator",
+  "split": "Out-of-Domain_50",
+  "class": "selection_marking",
+  "prompt_specified": false,
+  "include": true,
+  "exclude_reason": null,
+  "answer_key": "point",
+  "answer_format": "point: [x, y] of the center of the second-largest shape; pixel coordinates on the 1024x1024 image (origin top-left, x right, y down)",
+  "answer_example": {
+   "point": [
+    950,
+    950
+   ]
+  },
+  "comparator": {
+   "type": "point_nearest",
+   "candidates": "sgt.shapes[*].center",
+   "target_index": "sgt.second_largest_index",
+   "max_px": 130
+  },
+  "notes": "sgt.shapes[*].center are [x,y] (render circle cx_px/cy_px match; image 00004 shows the yellow r=158 circle at (450,759) = GT). size = radius (highlight radius = size+20); second_largest_index = rank 2 of size (5/5). Centres >=256 px apart; target radii 99-158, max_px 130 is generous for a centre answer. Only circles appear in these 5 samples."
+ },
+ {
+  "task": "G-167_select_longest_polygon_side_data-generator",
+  "split": "Out-of-Domain_50",
+  "class": "selection_marking",
+  "prompt_specified": false,
+  "include": true,
+  "exclude_reason": null,
+  "answer_key": "midpoint",
+  "answer_format": "midpoint: [x, y] of the midpoint of the polygon's longest side; pixel coordinates on the 1024x1024 image (origin top-left, x right, y down)",
+  "answer_example": {
+   "midpoint": [
+    150,
+    150
+   ]
+  },
+  "comparator": {
+   "type": "point_tol",
+   "gt": "sgt.marking_target_midpoint",
+   "tol": 40
+  },
+  "notes": "sgt.marking_target_midpoint equals the midpoint of sgt.edges[longest_side_index] (5/5); edges are [x,y] pairs matching the render polygon points_px. The longest edge is >=1.5x the second; other edge midpoints are >=163 px from GT, so tol 40 cleanly rejects the second-longest side."
+ },
+ {
+  "task": "G-168_identify_nearest_to_square_rectangle_data-generator",
+  "split": "Out-of-Domain_50",
+  "class": "selection_marking",
+  "prompt_specified": false,
+  "include": true,
+  "exclude_reason": null,
+  "answer_key": "point",
+  "answer_format": "point: [x, y] of the center of the rectangle closest to a square; pixel coordinates on the 1024x1024 image (origin top-left, x right, y down)",
+  "answer_example": {
+   "point": [
+    900,
+    950
+   ]
+  },
+  "comparator": {
+   "type": "point_tol",
+   "gt": "sgt.marking_contract.center",
+   "tol": 40
+  },
+  "notes": "Rectangle order is internal; metadata stores bboxes (xywh) but no centre list, so point_tol on sgt.marking_contract.center, which equals the target bbox centre x+w/2,y+h/2 (5/5; render rect x_px/y_px match xywh). Other rectangle centres are >=197 px away; target half-sizes 34-63 px."
+ },
+ {
+  "task": "G-169_locate_intersection_of_segments_data-generator",
+  "split": "Out-of-Domain_50",
+  "class": "selection_marking",
+  "prompt_specified": false,
+  "include": true,
+  "exclude_reason": null,
+  "answer_key": "point",
+  "answer_format": "point: [x, y] of the point where the two segments cross; pixel coordinates on the 1024x1024 image (origin top-left, x right, y down)",
+  "answer_example": {
+   "point": [
+    100,
+    100
+   ]
+  },
+  "comparator": {
+   "type": "point_tol",
+   "gt": "sgt.intersection",
+   "tol": 30
+  },
+  "notes": "sgt.intersection equals the recomputed line-line intersection of sgt.segments endpoints (5/5); endpoints are [x,y] (render line points_px match) and the GT pixel lies on a drawn line. Nearest endpoint >=145 px away."
+ },
+ {
+  "task": "G-174_arrange_circles_by_circumference_data-generator",
+  "split": "Out-of-Domain_50",
+  "class": "multi_object_discrete",
+  "prompt_specified": false,
+  "include": true,
+  "exclude_reason": null,
+  "answer_key": "order",
+  "answer_format": "order: list of [x, y] centers of the circles as they appear now, listed in their final left-to-right order in the sorted row, every circle exactly once; pixel coordinates on the 1024x1024 image (origin top-left, x right, y down)",
+  "answer_example": {
+   "order": [
+    [
+     100,
+     100
+    ],
+    [
+     300,
+     900
+    ],
+    [
+     800,
+     400
+    ]
+   ]
+  },
+  "comparator": {
+   "type": "custom",
+   "description": "Ordered point list. Let C = sgt.circles[*].initial_position (current centres, [x,y]), I = sgt.circles[*].id, G = sgt.sorted_ids (final left-to-right order of ids). Correct iff len(answer) == len(C); each answer point maps to its nearest point of C with distance <= max_px (70); the mapped circles are all distinct; and [I[m] for m in mapped] == G exactly (order matters).",
+   "candidates": "sgt.circles[*].initial_position",
+   "ids": "sgt.circles[*].id",
+   "gt_order": "sgt.sorted_ids",
+   "max_px": 70
+  },
+  "notes": "No catalog comparator checks an ordered list of points with tolerance, and circle ids/colours are not viewer-nameable (colours repeat, e.g. 00000 has two [255,100,100] circles), so the answer names each circle by its current centre. initial_position is [x,y] (render circle cx_px/cy_px match); radii are distinct and sorted_ids sorts by radius descending (5/5). Initial centres >=101 px apart; max_px ~ radius (30-79) + margin. Final positions depend on an unstated 16 px spacing, so they are not asked."
+ },
+ {
+  "task": "G-189_draw_midpoint_perpendicular_line_data-generator",
+  "split": "Out-of-Domain_50",
+  "class": "selection_marking",
+  "prompt_specified": false,
+  "include": true,
+  "exclude_reason": null,
+  "answer_key": "point",
+  "answer_format": "point: [x, y] of the center of the dot that the red perpendicular line must pass through; pixel coordinates on the 1024x1024 image (origin top-left, x right, y down)",
+  "answer_example": {
+   "point": [
+    60,
+    980
+   ]
+  },
+  "comparator": {
+   "type": "point_nearest",
+   "candidates": "sgt.points[*].position",
+   "target": "sgt.mid_point",
+   "max_px": 40
+  },
+  "notes": "sgt.mid_point is a member of sgt.points[*].position and its y equals (line1_y+line2_y)/2 within 0.5 px (5/5); positions are [x,y] (render circle cx_px/cy_px match; the lines are horizontal at y=line1_y/line2_y). Other dots >=67 px away; dot radius 8, max_px 8+30."
+ },
+ {
+  "task": "G-193_draw_next_sized_shape_data-generator",
+  "split": "Out-of-Domain_50",
+  "class": "selection_marking",
+  "prompt_specified": false,
+  "include": true,
+  "exclude_reason": null,
+  "answer_key": "size",
+  "answer_format": "size: the size of the shape that belongs in the empty box, one of \"small\", \"medium\", \"large\" (relative to the three sizes used in the row)",
+  "answer_example": {
+   "size": "large"
+  },
+  "comparator": {
+   "type": "str_exact",
+   "gt": "sgt.next_slot.shape.size_name",
+   "aliases": {
+    "large": [
+     "big",
+     "biggest",
+     "largest"
+    ],
+    "small": [
+     "smallest",
+     "tiny"
+    ],
+    "medium": [
+     "middle",
+     "mid",
+     "medium sized"
+    ]
+   }
+  },
+  "notes": "size_cycle is always [large, medium, small] with 5 filled slots, so exactly three sizes are visible and the names are derivable; next_slot.shape.size_name continues the cycle (5/5). Shape type is fixed, so size is the only decision. Caveat: in 00002 (diamonds) large 59.3 vs medium 56.0 look almost equal."
+ },
+ {
+  "task": "G-202_mark_wave_peaks_data-generator",
+  "split": "Out-of-Domain_50",
+  "class": "selection_marking",
+  "prompt_specified": false,
+  "include": true,
+  "exclude_reason": null,
+  "answer_key": "peaks",
+  "answer_format": "peaks: list of [x, y] of every peak (a visual crest of the wave, i.e. a local minimum of image y; the two end points of the wave never count), ordered left to right; pixel coordinates on the 1024x1024 image (origin top-left, x right, y down)",
+  "answer_example": {
+   "peaks": [
+    [
+     100,
+     900
+    ],
+    [
+     500,
+     950
+    ]
+   ]
+  },
+  "comparator": {
+   "type": "point_set_tol",
+   "gt": "sgt.peaks",
+   "tol": 40
+  },
+  "notes": "sgt.peaks are exactly the interior local minima of y in par.wave_points (visual crests), 3 per sample (5/5); points are [x,y] (render polyline points_px match) and GT pixels lie on the drawn wave. Peaks >=230 px apart; the troughs fail. Format states y-down because the prompt speaks of 'wave value', and excludes the end points (they have one neighbour): in 00001 the wave ends at (960,393) only 5 px below peak height, a cut-off crest."
+ },
+ {
+  "task": "G-206_identify_pentagons_data-generator",
+  "split": "Out-of-Domain_50",
+  "class": "selection_marking",
+  "prompt_specified": false,
+  "include": true,
+  "exclude_reason": null,
+  "answer_key": "point",
+  "answer_format": "point: [x, y] of the center of the pentagon; pixel coordinates on the 1024x1024 image (origin top-left, x right, y down)",
+  "answer_example": {
+   "point": [
+    950,
+    60
+   ]
+  },
+  "comparator": {
+   "type": "point_tol",
+   "gt": "sgt.target_center_px",
+   "tol": 40
+  },
+  "notes": "Polygon order is internal and there is no per-polygon centre list, so point_tol on sgt.target_center_px, which equals the vertex mean of par.polygons[target_index].points (5/5, render points_px match [x,y]); exactly one 5-sided polygon per sample. Other polygon centres >=215 px away; pentagon circumradius 60-101 px."
+ },
+ {
+  "task": "G-212_find_incorrect_arrow_direction_data-generator",
+  "split": "Out-of-Domain_50",
+  "class": "selection_marking",
+  "prompt_specified": false,
+  "include": true,
+  "exclude_reason": null,
+  "answer_key": "point",
+  "answer_format": "point: [x, y] of the center of the arrow that points differently from the others; pixel coordinates on the 1024x1024 image (origin top-left, x right, y down)",
+  "answer_example": {
+   "point": [
+    980,
+    40
+   ]
+  },
+  "comparator": {
+   "type": "point_nearest",
+   "candidates": "par.positions",
+   "target_index": "sgt.incorrect_index",
+   "max_px": 70
+  },
+  "notes": "par.positions (arrows only; sgt.objects has an extra answer-ring entry) are [x,y] arrow centres: sgt.incorrect_arrow_position_px == par.positions[incorrect_index] (5/5) and image 00002 shows the reversed arrow at (397,205). Arrows 4-12 per ring, >=176 px apart; max_px = arrow half-size 41 + 30."
+ },
+ {
+  "task": "G-217_circle_central_dot_data-generator",
+  "split": "Out-of-Domain_50",
+  "class": "selection_marking",
+  "prompt_specified": false,
+  "include": true,
+  "exclude_reason": null,
+  "answer_key": "index",
+  "answer_format": "index: 0-based position of the middle dot, counted from the leftmost dot (leftmost dot = 0)",
+  "answer_example": {
+   "index": 2
+  },
+  "comparator": {
+   "type": "int_exact",
+   "gt": "sgt.middle_index",
+   "offset": 0
+  },
+  "notes": "par.dots are sorted by x (single horizontal row at y=512, uniform spacing, 7-11 dots) and sgt.middle_index = (n-1)/2 indexes that left-to-right order (5/5); image 00003 shows 7 dots with GT index 3 at x=695. Rows are off-centre, so the dot nearest the image centre is a wrong answer."
+ },
+ {
+  "task": "G-218_identify_largest_angle_in_triangle_data-generator",
+  "split": "Out-of-Domain_50",
+  "class": "selection_marking",
+  "prompt_specified": false,
+  "include": true,
+  "exclude_reason": null,
+  "answer_key": "vertex",
+  "answer_format": "vertex: [x, y] of the triangle vertex with the largest interior angle; pixel coordinates on the 1024x1024 image (origin top-left, x right, y down)",
+  "answer_example": {
+   "vertex": [
+    40,
+    40
+   ]
+  },
+  "comparator": {
+   "type": "point_nearest",
+   "candidates": "sgt.vertices[*].xy",
+   "target_index": "sgt.target_vertex_index",
+   "max_px": 50
+  },
+  "notes": "sgt.vertices[*].xy == par.triangle ([x,y], render stroked triangle points_px match); target_vertex_index is the argmax of interior_angle_deg (5/5). Vertices >=172 px apart; max_px = 20 + 30."
+ },
+ {
+  "task": "G-219_select_leftmost_shape_data-generator",
+  "split": "Out-of-Domain_50",
+  "class": "selection_marking",
+  "prompt_specified": false,
+  "include": true,
+  "exclude_reason": null,
+  "answer_key": "point",
+  "answer_format": "point: [x, y] of the center of the leftmost shape; pixel coordinates on the 1024x1024 image (origin top-left, x right, y down)",
+  "answer_example": {
+   "point": [
+    980,
+    980
+   ]
+  },
+  "comparator": {
+   "type": "point_nearest",
+   "candidates": "sgt.shapes[*].position",
+   "target_index": "sgt.leftmost_index",
+   "max_px": 100
+  },
+  "notes": "sgt.shapes[*].position is the [x,y] shape centre (image 00000: square spans x 248-397, y 761-910 around (322,835)); leftmost_index = argmin centre x and also argmin left edge (5/5). size = full width (max 148), max_px = 74 + 30."
+ },
+ {
+  "task": "G-221_outline_innermost_square_data-generator",
+  "split": "Out-of-Domain_50",
+  "class": "continuous",
+  "prompt_specified": false,
+  "include": true,
+  "exclude_reason": null,
+  "answer_key": "side_px",
+  "answer_format": "side_px: side length in pixels of the innermost square (the one to outline), on the 1024x1024 image",
+  "answer_example": {
+   "side_px": 650
+  },
+  "comparator": {
+   "type": "num_tol",
+   "gt": "par.squares[-1].size",
+   "tol": 30
+  },
+  "notes": "PATH USES A NEGATIVE INDEX: the innermost square is the last entry of par.squares (sgt.structure.ordering says squares[-1] innermost) and the count varies 3-5, with no metadata path equal to n-1; the grader must accept Python-style [-1]. All squares are centred at (512,512) (position + size/2 = 512, 5/5), so the side length fixes the outline. Gap to the next square >=132 px; the outermost square is the 1024 canvas."
+ },
+ {
+  "task": "G-222_mark_tangent_point_of_circles_data-generator",
+  "split": "Out-of-Domain_50",
+  "class": "selection_marking",
+  "prompt_specified": false,
+  "include": true,
+  "exclude_reason": null,
+  "answer_key": "point",
+  "answer_format": "point: [x, y] of the tangent point where the two touching circles meet; pixel coordinates on the 1024x1024 image (origin top-left, x right, y down)",
+  "answer_example": {
+   "point": [
+    60,
+    60
+   ]
+  },
+  "comparator": {
+   "type": "point_tol",
+   "gt": "sgt.tangent_point_px",
+   "tol": 30
+  },
+  "notes": "sgt.tangent_point_px is within 1 px of the recomputed contact point of the pair with gap ~0 (5/5); circle centres are [x,y] (render cx_px/cy_px match). The closest-approach point of every other pair is >=125 px away (00004 has a near-tangent 9.7 px distractor at 139 px)."
+ },
+ {
+  "task": "G-223_highlight_horizontal_lines_data-generator",
+  "split": "Out-of-Domain_50",
+  "class": "selection_marking",
+  "prompt_specified": false,
+  "include": true,
+  "exclude_reason": null,
+  "answer_key": "midpoints",
+  "answer_format": "midpoints: list of [x, y] of the midpoint of every horizontal line, one entry per line, any order; pixel coordinates on the 1024x1024 image (origin top-left, x right, y down)",
+  "answer_example": {
+   "midpoints": [
+    [
+     100,
+     950
+    ],
+    [
+     900,
+     60
+    ]
+   ]
+  },
+  "comparator": {
+   "type": "point_set_tol",
+   "gt": "sgt.expected_final_markings[*].midpoint",
+   "tol": 40
+  },
+  "notes": "expected_final_markings[*].midpoint are the midpoints of the type=='horizontal' lines (count == par.horizontal_count, 5/5); lines are [x,y] endpoint pairs (horizontal ones have equal y, render points_px match). Only horizontal/vertical lines occur; vertical-line midpoints are >=149 px from any GT midpoint, so adding one fails on count."
+ },
+ {
+  "task": "G-24_separate_objects_no_spin_data-generator",
+  "split": "Out-of-Domain_50",
+  "class": "multi_object_discrete",
+  "prompt_specified": false,
+  "include": true,
+  "exclude_reason": null,
+  "answer_key": "moves",
+  "answer_format": "moves: list with one entry per object, each {\"from\": [x, y] current center, \"to\": [x, y] center after the move}; pixel coordinates on the 1024x1024 image (origin top-left, x right, y down)",
+  "answer_example": {
+   "moves": [
+    {
+     "from": [
+      100,
+      100
+     ],
+     "to": [
+      300,
+      100
+     ]
+    }
+   ]
+  },
+  "comparator": {
+   "type": "custom",
+   "description": "Matched move pairs. Let S = sgt.objects[*].start_center_xy and E = sgt.objects[*].end_center_xy ([x,y]). Correct iff len(answer) == len(S); each entry's 'from' maps to its nearest point of S with distance <= from_max_px (150); the mapping is one-to-one over all objects; and each entry's 'to' is within to_tol (30 px) of E of the object its 'from' mapped to.",
+   "starts": "sgt.objects[*].start_center_xy",
+   "ends": "sgt.objects[*].end_center_xy",
+   "from_max_px": 150,
+   "to_tol": 30
+  },
+  "notes": "The decision is which dashed outline each object goes to: two objects share a row in 00000/00001/00002/00004 and the left one can go to the farther target (00001 row y=470, 00004 row y=622), so a plain set of end centres would pass a wrong matching; no catalog comparator checks pairs. Centres are [x,y] (render circle cx_px/cy_px and polygon points match; image 00000 shows the circle at (180,578) and its dashed circle at (684,578)); y is unchanged by each move. size = radius (circle r 118), start centres >=160 px apart."
+ },
+ {
+  "task": "G-240_add_borders_to_unbordered_shapes_data-generator",
+  "split": "Out-of-Domain_50",
+  "class": "selection_marking",
+  "prompt_specified": false,
+  "include": true,
+  "exclude_reason": null,
+  "answer_key": "points",
+  "answer_format": "points: list of [x, y] of the center of every shape that has no black border, one entry per shape, any order; pixel coordinates on the 1024x1024 image (origin top-left, x right, y down)",
+  "answer_example": {
+   "points": [
+    [
+     60,
+     980
+    ],
+    [
+     980,
+     60
+    ]
+   ]
+  },
+  "comparator": {
+   "type": "point_set_nearest",
+   "candidates": "sgt.all_shapes[*].position",
+   "target_points": "sgt.shapes_requiring_borders[*].position",
+   "max_px": 150
+  },
+  "notes": "shapes_requiring_borders are exactly the all_shapes with has_border false (5/5); positions are [x,y] centres (image 00003: bordered triangle at (306,306), unbordered pentagon at (723,296)). 1-3 targets per sample (00001 all 3); size ~ circumradius up to 140, shapes >=399 px apart, max_px 150."
+ },
+ {
+  "task": "G-247_identify_chinese_character_data-generator",
+  "split": "Out-of-Domain_50",
+  "class": "selection_marking",
+  "prompt_specified": false,
+  "include": true,
+  "exclude_reason": null,
+  "answer_key": "point",
+  "answer_format": "point: [x, y] of the center of the Chinese character; pixel coordinates on the 1024x1024 image (origin top-left, x right, y down)",
+  "answer_example": {
+   "point": [
+    40,
+    980
+   ]
+  },
+  "comparator": {
+   "type": "point_nearest",
+   "candidates": "sgt.all_characters[*].position",
+   "target": "sgt.chinese_character.position",
+   "max_px": 100
+  },
+  "notes": "Positions are glyph centres in [x,y]: render text layers use anchor 'mm' at x_px/y_px == position (5/5). Exactly one is_chinese character; characters >=205 px apart; font 135 px, max_px ~ 68 + 30. A point is used instead of the glyph string so the grade does not depend on reading the character."
+ },
+ {
+  "task": "G-248_mark_asymmetrical_shape_data-generator",
+  "split": "Out-of-Domain_50",
+  "class": "selection_marking",
+  "prompt_specified": false,
+  "include": true,
+  "exclude_reason": null,
+  "answer_key": "point",
+  "answer_format": "point: [x, y] of the center of the asymmetrical shape; pixel coordinates on the 1024x1024 image (origin top-left, x right, y down)",
+  "answer_example": {
+   "point": [
+    980,
+    40
+   ]
+  },
+  "comparator": {
+   "type": "point_nearest",
+   "candidates": "sgt.all_shapes[*].center",
+   "target_index": "sgt.asymmetrical_shape.index",
+   "max_px": 100
+  },
+  "notes": "all_shapes[*].center are [x,y] (render polygon points bbox centres match for the symmetric shapes). For the asymmetric polygon the stored centre can sit up to 39 px from its bbox centre (00002, 00003), so max_px 100 lets a visual-centre answer pass; shapes >=261 px apart so nearest-mapping is unambiguous (checked)."
+ },
+ {
+  "task": "G-250_color_triple_intersection_red_data-generator",
+  "split": "Out-of-Domain_50",
+  "class": "continuous",
+  "prompt_specified": false,
+  "include": true,
+  "exclude_reason": null,
+  "answer_key": "bbox",
+  "answer_format": "bbox: [x_min, y_min, x_max, y_max] pixel bounding box (origin top-left, x right, y down, 1024x1024 frame) of the region that lies inside all three circles, i.e. the region to colour red",
+  "answer_example": {
+   "bbox": [
+    0,
+    0,
+    100,
+    100
+   ]
+  },
+  "comparator": {
+   "type": "custom",
+   "custom_kind": "bbox_edges_tol",
+   "region_polygon": "sgt.answer_region.polygon_px",
+   "tol": 20,
+   "description": "GT box = [min x, min y, max x, max y] over the vertices of sgt.answer_region.polygon_px. Correct when the answer is 4 numbers with x_min < x_max, y_min < y_max and every one of the four values is within tol (20 px) of the matching GT box edge."
+  },
+  "notes": "A point-inside answer was rejected: the image centre (512, 512) lies inside the triple region in all 5 samples, so a constant answer would score 5/5. The bbox needs the actual circle geometry: the median of the 5 GT boxes fails all 5 samples at tol 20 (max edge error 27-52 px); only 00003 and 00004 accept each other's GT box (17 px apart). GT box from the polygon = box of pixels inside all three circles (sgt.objects[k].center [x, y], radius) = red-pixel box in final_frame.png, all within 1 px. Wrong answers checked: the box of a two-circle lens and the constant median box."
+ },
+ {
+  "task": "G-273_high_density_liquid_data-generator",
+  "split": "Out-of-Domain_50",
+  "class": "multi_object_discrete",
+  "prompt_specified": false,
+  "include": true,
+  "exclude_reason": null,
+  "answer_key": "result",
+  "answer_format": "result: {\"special_cup\": 0-based index of the cup whose liquid colour differs from the others (0 = leftmost cup), \"special_object_floats\": true if the object that falls into that cup ends up floating, false if it sinks to the bottom}",
+  "answer_example": {
+   "result": {
+    "special_cup": 1,
+    "special_object_floats": false
+   }
+  },
+  "comparator": {
+   "type": "fields_exact",
+   "fields": {
+    "special_cup": {
+     "gt": "sgt.special_cup_index",
+     "cmp": "exact"
+    },
+    "special_object_floats": {
+     "gt": "sgt.special_has_high_density",
+     "cmp": "exact"
+    }
+   }
+  },
+  "notes": "The float/sink state of every object is fixed by these two fields: the special-cup object floats iff sgt.special_has_high_density, the others do the opposite (confirmed from sgt.objects[*].final_position: floating objects end near the water surface, sunk ones at y ~ 810-824 near the cup bottom; sample 00004 has the lighter special cup whose object sinks). Cup index order = left to right (sgt.cups[*].position x increases; image checked on 00004)."
+ },
+ {
+  "task": "G-47_multiple_keys_for_one_door_data-generator",
+  "split": "Out-of-Domain_50",
+  "class": "single_agent_path",
+  "prompt_specified": false,
+  "include": true,
+  "exclude_reason": null,
+  "answer_key": "path",
+  "answer_format": "path: list of grid cells [col, row] from the green agent's cell to the door cell inclusive, one 4-connected step per move, collecting every key before the door, with the shortest total length; the whole image is an N x N grid of equal square cells including the black outer border (cell size = border thickness, N = 11 or 13), col 0 = leftmost column, row 0 = top row, black cells are walls",
+  "answer_example": {
+   "path": [
+    [
+     1,
+     1
+    ],
+    [
+     2,
+     1
+    ]
+   ]
+  },
+  "comparator": {
+   "type": "custom",
+   "custom_kind": "multi_key_path",
+   "convention": "row_col",
+   "start": "sgt.agent_start_position",
+   "end": "sgt.door.pos",
+   "blocked": null,
+   "wall_grid": "sgt.grid",
+   "wall_value": 1,
+   "grid_w": "sgt.grid_size.pixel_width",
+   "grid_h": "sgt.grid_size.pixel_height",
+   "keys": "sgt.keys[*].pos",
+   "gt_path_parts": [
+    "sgt.segments_to_keys",
+    "sgt.path_to_door"
+   ],
+   "description": "Answer path ([col,row]) starts at the agent, ends at the door, moves 4-connected over free cells, visits every key before the last cell in any order, and has the minimum total length over all key orders (BFS distances). GT = segments_to_keys joined + path_to_door."
+  },
+  "notes": "Metadata cells are [row, col] on the pixel grid sgt.grid (11x11 or 13x13, border included, grid[row][col] == 1 is a wall): start [1,6] of 00000 is open at grid[1][6] but a wall at grid[6][1], and the agent is drawn at pixel (605,140) = col 6, row 1 of 93-px cells; door [9,8] drawn at (791,884). sgt.grid_size.width_cells (5 or 6) counts maze rooms, not grid cells, so the format fixes N = 11 or 13. waypoints is a list of two path expressions (all samples have num_keys = 2), i.e. the keys in sgt.key_collection_order. gt_path is null because no single stored route exists: the grader takes the per-segment optimum from BFS on sgt.grid; BFS reproduces the stored segment lengths (agent_to_first_key_length, len(segments_to_keys[1]) - 1, last_key_to_door_length) and total_route_length on all 5 samples, the other key order is strictly longer (no ties), and no GT segment passes over the not-yet-collected key or the door. The mazes are perfect (no cycles): in 00000, 00001, 00002 and 00004 both keys lie on the unique start-to-door path, so the optimal route is simply that path; only 00003 needs a real detour to a key. | main agent: key order made free (prompt asks the model to pick the order), optimum taken over all orders."
+ },
+ {
+  "task": "G-54_connecting_color_data-generator",
+  "split": "Out-of-Domain_50",
+  "class": "multi_object_discrete",
+  "prompt_specified": false,
+  "include": true,
+  "exclude_reason": null,
+  "answer_key": "pairs",
+  "answer_format": "pairs: list with one entry per colour; each entry is [[x1, y1], [x2, y2]] = pixel centres (origin top-left) of the two same-coloured shapes that one curve connects",
+  "answer_example": {
+   "pairs": [
+    [
+     [
+      60,
+      60
+     ],
+     [
+      960,
+      960
+     ]
+    ]
+   ]
+  },
+  "comparator": {
+   "type": "custom",
+   "custom_kind": "unordered_pairs",
+   "candidates": "par.shapes[*].center",
+   "candidate_colors": "par.shapes[*].color",
+   "num_pairs": "par.num_colors",
+   "max_px": 105,
+   "description": "Map every answer endpoint to the nearest centre in par.shapes[*].center (Euclidean px); an endpoint farther than max_px from every centre fails. Correct when the answer has exactly par.num_colors pairs, no shape is used twice, the two endpoints of each pair map to two different shapes with identical par.shapes[k].color, and together the pairs cover every shape. Pair order and endpoint order inside a pair do not matter. (GT pairs = first and last point of each par.curves[k].points.)"
+  },
+  "notes": "The only decision is which shapes pair up (same colour, exactly 2 shapes per colour). Centres are [x, y] px: the stored centre pixel has the shape's colour in every sample while the swapped [y, x] does not. par.shape_size is the radius (78 -> 156 px wide), min distance between shape centres is 209 px, so max_px = 105 is unambiguous. No catalog comparator scores a pairing of points, hence custom."
+ },
+ {
+  "task": "O-11_shape_color_then_move_data-generator",
+  "split": "Out-of-Domain_50",
+  "class": "continuous",
+  "prompt_specified": false,
+  "include": true,
+  "exclude_reason": null,
+  "answer_key": "F",
+  "answer_format": "F: {\"rgb\": [r, g, b] (0-255) fill colour of the final shape F (bottom row, right column), \"center_y\": pixel y of F's centre after its move (origin top, y grows downward)}",
+  "answer_example": {
+   "F": {
+    "rgb": [
+     128,
+     128,
+     128
+    ],
+    "center_y": 500
+   }
+  },
+  "comparator": {
+   "type": "fields_exact",
+   "fields": {
+    "rgb": {
+     "gt": "sgt.objects[5].rgb",
+     "cmp": "rgb_tol",
+     "tol": 40
+    },
+    "center_y": {
+     "gt": "sgt.objects[5].center[1]",
+     "cmp": "num_tol",
+     "tol": 12
+    }
+   }
+  },
+  "notes": "sgt.objects[5] is label F in all samples; F.rgb = B's recoloured rgb, F.center = [769, 682 + (C.y - B.y)], centres are [x, y] px (first frame shows A, B, C on the top row at y = 341/341/C.y and D at (195, 682) with '?' for E and F). Offsets across samples: +25, +100, -60, +40, +100 px, so tol 12 rejects 'no move' and wrong direction; rgb tol 40 rejects D's original colour (min source-target max-channel gap 69)."
+ },
+ {
+  "task": "O-2_pigment_color_mixing_subtractive_data-generator",
+  "split": "Out-of-Domain_50",
+  "class": "continuous",
+  "prompt_specified": false,
+  "include": true,
+  "exclude_reason": null,
+  "answer_key": "rgb",
+  "answer_format": "rgb: [r, g, b] integers 0-255, the mixed colour that fills the black-bordered mixing zone",
+  "answer_example": {
+   "rgb": [
+    255,
+    255,
+    255
+   ]
+  },
+  "comparator": {
+   "type": "rgb_tol",
+   "gt": "sgt.mixed_color",
+   "tol": 3
+  },
+  "notes": "sgt.mixed_color equals round(c1 * c2 / 255) per channel (the prompt's rule) on all 5 samples. The metadata field sgt.cmy_formula (min(CMY1 + CMY2, 255)) disagrees with both the prompt and mixed_color; its result is used as a wrong answer and fails (gap >= 4 on every sample). tol 3 absorbs rounding."
+ },
+ {
+  "task": "O-22_construction_stack_data-generator",
+  "split": "Out-of-Domain_50",
+  "class": "multi_object_discrete",
+  "prompt_specified": false,
+  "include": true,
+  "exclude_reason": null,
+  "answer_key": "moves",
+  "answer_format": "moves: list of [from_stack, to_stack] moves applied to the left CURRENT area, stacks numbered 0-2 from left to right; each move lifts the top block of from_stack onto the top of to_stack; use the fewest moves",
+  "answer_example": {
+   "moves": [
+    [
+     0,
+     1
+    ]
+   ]
+  },
+  "comparator": {
+   "type": "stack_moves",
+   "initial": "sgt.initial_state",
+   "target": "sgt.target_state",
+   "optimal": "sgt.optimal_moves",
+   "gt_moves": "sgt.solution_moves"
+  },
+  "notes": "Stacks are lists bottom -> top (position 0 has y = 792, higher positions have smaller y; image of 00000 shows stack 2 = P under G, empty stacks keep a visible base). Stack index = left-to-right order (x = 128, 256, 384). Replaying sgt.solution_moves reaches sgt.target_state, and BFS over states confirms sgt.optimal_moves is the true minimum on all 5 samples."
+ },
+ {
+  "task": "O-27_move_2_object_to_2_target_data-generator",
+  "split": "Out-of-Domain_50",
+  "class": "multi_object_discrete",
+  "prompt_specified": false,
+  "include": true,
+  "exclude_reason": null,
+  "answer_key": "moves",
+  "answer_format": "moves: list with one entry per object, each {\"from\": [x, y] the object's current pixel centre, \"to\": [x, y] the pixel centre of the matching outline it moves to}, any order (origin top-left)",
+  "answer_example": {
+   "moves": [
+    {
+     "from": [
+      60,
+      60
+     ],
+     "to": [
+      960,
+      960
+     ]
+    }
+   ]
+  },
+  "comparator": {
+   "type": "custom",
+   "custom_kind": "matched_moves",
+   "from_points": "par.object_starts",
+   "to_points": "par.target_positions",
+   "from_max_px": 100,
+   "to_tol": 40,
+   "description": "Answer is a list of {\"from\": [x, y], \"to\": [x, y]} entries with exactly one entry per object. Map each 'from' to the nearest point of from_points (Euclidean px); that distance must be <= from_max_px and the mapping must be one-to-one over all objects. Correct iff every 'to' is within to_tol px of to_points[k] of the object k its 'from' mapped to (object k must go to target k)."
+  },
+  "notes": "Decision = which outline each object goes to (sgt.pairing_rule: object i -> target i). Centres are [x, y] px (object colour found at the stored centre, not at the swapped one). Object radius 70, min distance between any two start/target points 184 px. A plain point set cannot see a swapped pairing, hence custom. Weak baseline: with only 2 objects, a shape-blind 'i-th object in reading order -> i-th outline in reading order' guess passes 4/5 samples."
+ },
+ {
+  "task": "O-39_maze_data-generator",
+  "split": "Out-of-Domain_50",
+  "class": "single_agent_path",
+  "prompt_specified": false,
+  "include": true,
+  "exclude_reason": null,
+  "answer_key": "path",
+  "answer_format": "path: list of grid cells [col, row] from the green start to the red flag inclusive, one 4-connected step per move, shortest route; the image is a 15x15 grid of equal cells, col 0 = leftmost column, row 0 = top row, dark cells are walls",
+  "answer_example": {
+   "path": [
+    [
+     0,
+     0
+    ],
+    [
+     1,
+     0
+    ]
+   ]
+  },
+  "comparator": {
+   "type": "grid_path",
+   "convention": "row_col",
+   "start": "par.start",
+   "end": "par.end",
+   "blocked": null,
+   "wall_grid": "par.grid",
+   "wall_value": 0,
+   "waypoints": null,
+   "objective": "shortest",
+   "gt_path": "par.solution_path",
+   "cost_grid": null,
+   "grid_w": "par.grid_size",
+   "grid_h": "par.grid_size"
+  },
+  "notes": "Metadata cells are [row, col] and par.grid uses 1 = open, 0 = wall (opposite of G-47): in 00000 the green start is drawn at pixel (239, 34) = col 3, row 0 of 68-px cells and par.start = [0, 3]; the red flag at (853, 921) = col 12, row 13 and par.end = [13, 12]; the top image row matches par.grid[0] with 0 = dark. par.solution_path is valid under row_col with wall_value 0 and BFS confirms it is shortest."
+ },
+ {
+  "task": "O-43_object_subtraction_data-generator",
+  "split": "Out-of-Domain_50",
+  "class": "selection_marking",
+  "prompt_specified": false,
+  "include": true,
+  "exclude_reason": null,
+  "answer_key": "removed",
+  "answer_format": "removed: list of [x, y] pixel centres (origin top-left) of every object that must be removed; shapes are drawn flat: cube = square, sphere = circle, cone = downward-pointing triangle, pyramid = upward-pointing triangle",
+  "answer_example": {
+   "removed": [
+    [
+     40,
+     40
+    ]
+   ]
+  },
+  "comparator": {
+   "type": "point_set_nearest",
+   "candidates": "par.objects[*].center",
+   "target_indices": "par.removed_indices",
+   "max_px": 110
+  },
+  "notes": "Centres are [x, y] px bounding-box centres (object colour at every stored centre). The 3D names are rendered as 2D shapes; pixel analysis on all 5 samples: cube -> square, sphere -> circle, cone -> downward triangle, pyramid -> upward triangle. Samples 00002 and 00004 contain a cone and a pyramid of the same colour, so the legend in answer_format is required; it is a rendering convention, not the answer. Object half-size <= 90 px, min centre distance 222 px."
+ },
+ {
+  "task": "O-46_shape_sorter_data-generator",
+  "split": "Out-of-Domain_50",
+  "class": "multi_object_discrete",
+  "prompt_specified": false,
+  "include": true,
+  "exclude_reason": null,
+  "answer_key": "moves",
+  "answer_format": "moves: list with one entry per card, each {\"from\": [x, y] the card's current pixel centre (left half), \"to\": [x, y] the pixel centre of the matching outline it goes to (right half)}, any order (origin top-left)",
+  "answer_example": {
+   "moves": [
+    {
+     "from": [
+      60,
+      60
+     ],
+     "to": [
+      960,
+      960
+     ]
+    }
+   ]
+  },
+  "comparator": {
+   "type": "custom",
+   "custom_kind": "matched_moves",
+   "from_points": "par.specs[*].start",
+   "to_points": "par.specs[*].target",
+   "from_max_px": 75,
+   "to_tol": 45,
+   "description": "Answer is a list of {\"from\": [x, y], \"to\": [x, y]} entries with exactly one entry per object. Map each 'from' to the nearest point of from_points (Euclidean px); that distance must be <= from_max_px and the mapping must be one-to-one over all objects. Correct iff every 'to' is within to_tol px of to_points[k] of the object k its 'from' mapped to (object k must go to target k)."
+  },
+  "notes": "Cards match outlines by shape (outlines are grey). The move order is given by the prompt, so only the pairing is graded. Centres are [x, y] px (card colour at every stored start; 00002 image checked). Card size 90 px (diameter); min start spacing 137 px, min target spacing 139 px. Weak baseline: the outlines are always laid out in the cards' reading order, so a shape-blind reading-order pairing passes 5/5; the check still needs correct coordinates."
+ },
+ {
+  "task": "O-49_symmetry_completion_data-generator",
+  "split": "Out-of-Domain_50",
+  "class": "multi_object_discrete",
+  "prompt_specified": false,
+  "include": true,
+  "exclude_reason": null,
+  "answer_key": "grid",
+  "answer_format": "grid: the completed N x N pattern as a list of rows from top to bottom, each row a list of N integers from left to right (1 = filled cell, 0 = empty cell)",
+  "answer_example": {
+   "grid": [
+    [
+     1,
+     0
+    ],
+    [
+     0,
+     1
+    ]
+   ]
+  },
+  "comparator": {
+   "type": "list_exact",
+   "gt": "par.full_pattern"
+  },
+  "notes": "par.full_pattern is [row][col], rows top to bottom (00001 image: top row white, 4 blue, white). Missing cells are drawn as plain empty cells, so the full grid (not the missing-cell list) is asked. Verified: full_pattern equals the left half mirrored and agrees with every non-missing cell of par.incomplete_pattern on all 5 samples. N = 6 or 8."
+ },
+ {
+  "task": "O-5_symbol_deletion_data-generator",
+  "split": "Out-of-Domain_50",
+  "class": "selection_marking",
+  "prompt_specified": false,
+  "include": true,
+  "exclude_reason": null,
+  "answer_key": "index",
+  "answer_format": "index: 0-based position of the symbol inside the red border, counting slots from the left (leftmost = 0)",
+  "answer_example": {
+   "index": 0
+  },
+  "comparator": {
+   "type": "int_exact",
+   "gt": "sgt.target_index",
+   "offset": 0
+  },
+  "notes": "Slots carry no printed labels (00003 image). sgt.target_index = slot_index of the object with is_operation_target; slot x increases with slot_index (centre_px x = 242, 377, ...). 00003 image shows the red border on slot 1 = target_index 1."
+ },
+ {
+  "task": "O-54_control_panel_data-generator",
+  "split": "Out-of-Domain_50",
+  "class": "multi_object_discrete",
+  "prompt_specified": false,
+  "include": true,
+  "exclude_reason": null,
+  "answer_key": "levers",
+  "answer_format": "levers: {\"target_position\": \"left\", \"middle\" or \"right\" = the lever position that makes a light show the requested colour, \"levers_to_move\": list of 0-based unit indices (0 = leftmost unit) whose lever must change}",
+  "answer_example": {
+   "levers": {
+    "target_position": "middle",
+    "levers_to_move": [
+     1
+    ]
+   }
+  },
+  "comparator": {
+   "type": "fields_exact",
+   "fields": {
+    "target_position": {
+     "gt": "sgt.target_lever_position",
+     "cmp": "str"
+    },
+    "levers_to_move": {
+     "gt": "sgt.levers_to_move",
+     "cmp": "set"
+    }
+   }
+  },
+  "notes": "Unit ids run left to right (00003 image: purple light + left lever, indigo + right, pink + middle = initial_lever_positions [left, right, middle]). Position names come from the prompt. In 00002 the target colour (orange) is not shown on any light, so its position is inferred by elimination (bijection)."
+ },
+ {
+  "task": "O-56_raven_data-generator",
+  "split": "Out-of-Domain_50",
+  "class": "selection_marking",
+  "prompt_specified": false,
+  "include": true,
+  "exclude_reason": null,
+  "answer_key": "same_as",
+  "answer_format": "same_as: [row, col] (0-based, row 0 = top, col 0 = left) of one of the eight visible cells whose content (shape, count, colour, placement) is exactly what the missing bottom-right cell must contain",
+  "answer_example": {
+   "same_as": [
+    1,
+    1
+   ]
+  },
+  "comparator": {
+   "type": "custom",
+   "custom_kind": "equivalent_cell",
+   "cells": "sgt.objects[*]",
+   "answer_cell": "sgt.answer_cell",
+   "missing_cell": "sgt.missing_cell",
+   "description": "Correct when the answer [row, col] is inside the 3x3 grid, is not sgt.missing_cell, and the entry of sgt.objects with that row and col has shapes, positions and colors equal (list equality) to sgt.answer_cell's."
+  },
+  "notes": "Shape names in metadata do not match the drawings (00003 'crescent' is drawn as a circle, 00000 'cross' as a plus), so no name vocabulary is asked; the answer points to an identical visible cell instead. Verified that at least one visible cell equals sgt.answer_cell on every sample (rotation rule: cells (0,1) and (1,0); 00003 combination rule: (0,0), (0,2), (2,0)). Row/col are [row, col] with row 0 = top (tile 341 px). Weak baseline: the answer form reveals that the answer copies a visible cell, and a constant [0, 1] passes the 4 rotation-rule samples."
+ },
+ {
+  "task": "O-58_symbol_delete_data-generator",
+  "split": "Out-of-Domain_50",
+  "class": "multi_object_discrete",
+  "prompt_specified": true,
+  "include": true,
+  "exclude_reason": null,
+  "answer_key": "final_order",
+  "answer_format": "final_order: list, left to right, of the ORIGINAL 0-based slot index (box label - 1) of each symbol in the row after the deletion",
+  "answer_example": {
+   "final_order": [
+    0,
+    1,
+    2
+   ]
+  },
+  "comparator": {
+   "type": "list_exact",
+   "gt": "sgt.final_sequence",
+   "item": "source_slot_index"
+  },
+  "notes": "The prompt names the target and its 1-based position, so the outcome is prompt-specified. Boxes are labelled 1..N (00001 image) and the prompt position is that label (delete_position_1_indexed). The answer is the name-free final arrangement: sgt.final_sequence[*].source_slot_index (0-based) = all original slots except delete_position, in order."
+ },
+ {
+  "task": "O-59_symbol_insert_data-generator",
+  "split": "Out-of-Domain_50",
+  "class": "multi_object_discrete",
+  "prompt_specified": true,
+  "include": true,
+  "exclude_reason": null,
+  "answer_key": "final_order",
+  "answer_format": "final_order: list, left to right, of what fills each slot after the insertion: the ORIGINAL 0-based index (box label - 1) of an existing symbol, or null for the newly inserted symbol; the prompt's position is the final slot of the new symbol",
+  "answer_example": {
+   "final_order": [
+    null,
+    0
+   ]
+  },
+  "comparator": {
+   "type": "list_exact",
+   "gt": "sgt.objects",
+   "item": "initial_index"
+  },
+  "notes": "Prompt names the symbol and its 1-based final position (insert_position_one_indexed), so the outcome is prompt-specified. sgt.objects is ordered by final slot; initial_index is 0-based or null for the inserted symbol (verified against sgt.final_sequence). Boxes are labelled 1..N (00000 image; an empty extra slot is drawn at the end)."
+ },
+ {
+  "task": "O-6_2d_geometric_transformation_data-generator",
+  "split": "Out-of-Domain_50",
+  "class": "continuous",
+  "prompt_specified": false,
+  "include": true,
+  "exclude_reason": null,
+  "answer_key": "angle_deg",
+  "answer_format": "angle_deg: signed rotation in degrees about the marked centre that brings the polygon onto the dashed outline while turning in the prompt's direction; negative = counterclockwise on screen, positive = clockwise, magnitude between 0 and 360",
+  "answer_example": {
+   "angle_deg": -10
+  },
+  "comparator": {
+   "type": "num_tol",
+   "gt": "sgt.rotation_angle_deg",
+   "tol": 8
+  },
+  "notes": "Sign convention verified from vertices: in image coordinates (y down) the polygon angle atan2(dy, dx) goes 255 -> 213 deg in 00001 (rotation_angle_deg = -42, direction counterclockwise); rotating sgt.objects[0].initial_vertices_px by rotation_angle_deg about rotation_center_px reproduces final_vertices_px (< 0.01 px) on all 5 samples. GT values -247, -42, -76, +143, -201."
+ },
+ {
+  "task": "O-60_symbol_substitute_data-generator",
+  "split": "Out-of-Domain_50",
+  "class": "selection_marking",
+  "prompt_specified": true,
+  "include": true,
+  "exclude_reason": null,
+  "answer_key": "position",
+  "answer_format": "position: the 1-based slot label (as printed under the boxes) of the symbol that gets replaced",
+  "answer_example": {
+   "position": 1
+  },
+  "comparator": {
+   "type": "int_exact",
+   "gt": "sgt.substitute_position_1indexed",
+   "offset": 0
+  },
+  "notes": "The prompt states the slot, so the outcome is prompt-specified; the other slots stay unchanged (sgt.final_sequence differs from initial_sequence only at substitute_position). Boxes are labelled 1..N (00001 image: slot 3 = yellow right triangle as the prompt says)."
+ },
+ {
+  "task": "O-61_symbol_edit_data-generator",
+  "split": "Out-of-Domain_50",
+  "class": "multi_object_discrete",
+  "prompt_specified": true,
+  "include": true,
+  "exclude_reason": null,
+  "answer_key": "final_order",
+  "answer_format": "final_order: list, left to right, of what fills each slot after the edit: the ORIGINAL 0-based index (box label - 1) of an existing symbol, or null for a newly inserted symbol; the prompt's positions are the final slots of the inserted symbols",
+  "answer_example": {
+   "final_order": [
+    null,
+    0
+   ]
+  },
+  "comparator": {
+   "type": "list_exact",
+   "gt": "sgt.objects",
+   "item": "initial_index"
+  },
+  "notes": "The prompt lists the 1-based final insert positions (= sgt.insert_positions_final + 1 on all 5 samples), so the outcome is prompt-specified. sgt.objects is ordered by final slot; initial_index is 0-based or null for inserted copies (verified against sgt.final_sequence and sgt.initial_sequence)."
+ },
+ {
+  "task": "O-62_gravity_physics_data-generator",
+  "split": "Out-of-Domain_50",
+  "class": "continuous",
+  "prompt_specified": false,
+  "include": true,
+  "exclude_reason": null,
+  "answer_key": "height_m",
+  "answer_format": "height_m: the ball's height above the ground in metres at t = 3.0 s (t = 0 at the first frame; treat the ball as a point mass; elasticity = rebound speed / impact speed)",
+  "answer_example": {
+   "height_m": 0.0
+  },
+  "comparator": {
+   "type": "num_tol",
+   "gt": "sgt.trajectory.heights_m[48]",
+   "tol": 0.3
+  },
+  "notes": "sgt.trajectory.times_s[48] == 3.0 on all samples (16 fps). t = 3 s always falls inside the first rebound flight (first bounce 1.49-2.59 s, second 3.75-6.25 s). The stored trajectory matches the analytic bounce solution (first rebound apex equals e^2 (v0^2 + 2 g h0) / 2g within 0.003 m). Using the rounded prompt values moves h(3 s) by <= 0.08 m; wrong physics fails: no bounce / e = 1 / e^2 / sqrt(e) differ by >= 0.78 m."
+ },
+ {
+  "task": "O-64_animal_matching_data-generator",
+  "split": "Out-of-Domain_50",
+  "class": "multi_object_discrete",
+  "prompt_specified": false,
+  "include": true,
+  "exclude_reason": null,
+  "answer_key": "moves",
+  "answer_format": "moves: list with one entry per animal face, each {\"from\": [x, y] the face's current pixel centre (left half), \"to\": [x, y] the pixel centre of its matching dark outline (right half)}, any order (origin top-left)",
+  "answer_example": {
+   "moves": [
+    {
+     "from": [
+      60,
+      60
+     ],
+     "to": [
+      960,
+      960
+     ]
+    }
+   ]
+  },
+  "comparator": {
+   "type": "custom",
+   "custom_kind": "matched_moves",
+   "from_points": "par.objects[*].initial_center",
+   "to_points": "par.objects[*].target_center",
+   "from_max_px": 100,
+   "to_tol": 60,
+   "description": "Answer is a list of {\"from\": [x, y], \"to\": [x, y]} entries with exactly one entry per object. Map each 'from' to the nearest point of from_points (Euclidean px); that distance must be <= from_max_px and the mapping must be one-to-one over all objects. Correct iff every 'to' is within to_tol px of to_points[k] of the object k its 'from' mapped to (object k must go to target k)."
+  },
+  "notes": "Faces match outlines by animal type and size (00003 image: cat and tiger outlines differ mainly in size and stripes). Centres are [x, y] px (face colour near every stored centre; 00003 image checked). Face radius <= 75, min start spacing 170 px, min target spacing 191 px."
+ },
+ {
+  "task": "O-65_animal_size_sorting_data-generator",
+  "split": "Out-of-Domain_50",
+  "class": "multi_object_discrete",
+  "prompt_specified": false,
+  "include": true,
+  "exclude_reason": null,
+  "answer_key": "order",
+  "answer_format": "order: list of the animals' CURRENT pixel centres [x, y] (origin top-left), in the left-to-right order they must have on the baseline after sorting",
+  "answer_example": {
+   "order": [
+    [
+     512,
+     512
+    ]
+   ]
+  },
+  "comparator": {
+   "type": "custom",
+   "custom_kind": "ordered_points",
+   "candidates": "sgt.objects[*].initial_position_px",
+   "ids": "sgt.objects[*].index",
+   "gt_order": "sgt.sorted_indices",
+   "max_px": 100,
+   "description": "Ordered point list. Let C = candidates, I = ids, G = gt_order. Correct iff len(answer) == len(C); each answer point maps to its nearest point of C with distance <= max_px (100); the mapped objects are all distinct; and [I[m] for m in mapped] == G exactly (order matters)."
+  },
+  "notes": "sgt.sorted_indices uses the internal object order a viewer cannot know, so the answer names animals by their current position. Positions are [x, y] px (00000 image: panda (159,114), frog (702,383), fox (348,633)). Sort direction comes from the prompt (4 descending, 1 ascending). Radius <= 74 px, min spacing 195 px."
+ },
+ {
+  "task": "O-85_2d_object_rotation_data-generator",
+  "split": "Out-of-Domain_50",
+  "class": "continuous",
+  "prompt_specified": true,
+  "include": true,
+  "exclude_reason": null,
+  "answer_key": "rotation",
+  "answer_format": "rotation: {\"direction\": \"clockwise\" or \"counterclockwise\" (as seen on screen), \"degrees\": the rotation angle in degrees applied to every object about its own centroid}",
+  "answer_example": {
+   "rotation": {
+    "direction": "clockwise",
+    "degrees": 90
+   }
+  },
+  "comparator": {
+   "type": "fields_exact",
+   "fields": {
+    "direction": {
+     "gt": "sgt.rotation_direction",
+     "cmp": "str"
+    },
+    "degrees": {
+     "gt": "sgt.rotation_degrees",
+     "cmp": "num_tol",
+     "tol": 1
+    }
+   }
+  },
+  "notes": "Prompt states direction and angle (the schema's own prompt_specified example); per-object final orientations are not stored for non-polygon shapes, so the stated rotation is the only checkable value."
+ },
+ {
+  "task": "O-9_shape_scaling_data-generator",
+  "split": "Out-of-Domain_50",
+  "class": "no_answer",
+  "prompt_specified": false,
+  "include": false,
+  "exclude_reason": "Metadata defect: sgt.scale_factor (1.85/1.05/2.0/1.4) contradicts the rendered frames and the GT video (drawn B/A is about 0.86 in all 5 samples), so no metadata answer is checkable and a constant answer would score 5/5.",
+  "answer_key": "scale_factor",
+  "answer_format": "scale_factor: the factor (B size / A size, a positive number) by which A was rescaled into B, which is also applied to C to obtain ?",
+  "answer_example": {
+   "scale_factor": 3.0
+  },
+  "comparator": {
+   "type": "custom",
+   "custom_kind": "num_tol_measured",
+   "tol": 0.1,
+   "measured_gt": {
+    "00000": 0.861,
+    "00001": 0.864,
+    "00002": 0.866,
+    "00003": 0.837,
+    "00004": 0.866
+   },
+   "metadata_value": "sgt.scale_factor",
+   "description": "num_tol against the scale factor measured from the rendered first frame, NOT sgt.scale_factor: correct when |answer - measured_gt[sample]| <= 0.1. measured_gt = bbox width of the pixels within 40 of par.shape_color in the top-right quadrant (B) divided by the same in the top-left quadrant (A) of first_frame.png."
+  },
+  "notes": "METADATA DEFECT: sgt.scale_factor is 1.85 / 1.05 / 2.0 / 0.85 / 1.4, but the rendered B is smaller than A in every sample (B/A width ratio 0.861, 0.864, 0.866, 0.837, 0.866; height ratios agree within 0.01), and ground_truth final_frame D/C = 0.872, 0.866, 0.864, 0.839, 0.866. The GT video follows the rendered ratio, so grading uses the measured table; only 00003 agrees with the metadata. The metadata value itself is the wrong answer checked and fails in 4/5 samples. No per-sample signal: the rendered factor is ~0.86 everywhere, so a constant 0.86 passes 5/5; the main agent may prefer to drop this task."
+ }
+]

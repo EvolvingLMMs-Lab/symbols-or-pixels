@@ -1,0 +1,21 @@
+[project]
+name = "symbols-or-pixels"
+version = "0.1.0"
+description = "Inference, grading and analysis code with per-sample results for the note 'Symbols or Pixels?'"
+readme = "README.md"
+license = { text = "Apache-2.0" }
+requires-python = ">=3.10"
+dependencies = [
+    "matplotlib>=3.8",
+    "numpy>=1.24",
+    "pillow>=10",
+]
+
+[project.optional-dependencies]
+inference = [
+    "huggingface_hub[cli]>=0.34",
+    "vllm==0.29.0",
+]
+
+[tool.uv]
+package = false
