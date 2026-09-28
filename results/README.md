@@ -36,6 +36,23 @@ The five tasks outside the paired set, with the reason for each.
   - O-33: 3 of its 5 ground-truth videos score 0 (see `raw/video/ground_truth_v2_scores.jsonl`).
   - G-161: a video that does nothing receives full marks.
 
+## `scorer_audit.csv`
+
+A reading of the VBVR-Pro-Bench v2 task scorers (commit 95265d0) for the 95 paired tasks. It records what each v2 score checks beyond the decision that a text answer states. One row per task:
+
+| Column | Description |
+| --- | --- |
+| `task`, `task_id`, `evaluator` | Benchmark task, short id, evaluator module and class |
+| `formula` | The task score as the code computes it (weights, products, gates, penalties) |
+| `components` | Each scoring term with its category: `decision` (the content a correct answer specifies), `preservation` (content the task does not ask to change stays the same), `process` (intermediate frames or motion), or `rendering` (how the answer is drawn) |
+| `has_preservation_check` | 1 when any term checks preservation |
+| `decision_only_ceiling` | The score of a video whose decision terms are perfect and whose other terms are 0 |
+| `ceiling_reasoning` | The arithmetic, and the value under another reasonable category assignment where one exists |
+| `text_answer_key`, `text_covers_decision`, `text_covers_reason` | The text answer key, and whether the text specification checks the same decision as the scorer (`yes` or `partial`) |
+| `notes` | Differences between the scorer's docstring and its code, and other caveats |
+
+Summary: 92 of the 95 tasks check preservation. In 94 tasks the decision-only ceiling is below 0.9, and in 86 it is below 0.7. Some category assignments are judgment calls, so these counts can move by a few tasks (O-47 reaches 1.0 only if its move sequence counts as part of the decision); `ceiling_reasoning` gives the alternative values. The ceiling describes the scoring rule. It is not an estimate of how a text model that renders its own answer would score.
+
 ## `raw/`
 
 - `raw/text/<system>/responses.jsonl` holds the model outputs, one line per call. There are 485 calls: the 97 tasks with an answer specification × 5 samples. The fields are:
