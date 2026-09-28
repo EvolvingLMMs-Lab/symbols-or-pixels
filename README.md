@@ -1,6 +1,6 @@
 # Symbols or Pixels?
 
-Code and per-sample results for the LMMs-Lab note [Symbols or Pixels? Zero-shot language reasoning versus VBVR-trained video generation on visual reasoning tasks](https://www.lmms-lab.com/notes/symbols-or-pixels/).
+Code and per-sample results for the LMMs-Lab note [Symbols or Pixels? Zero-shot language reasoning versus video generation on visual reasoning tasks](https://www.lmms-lab.com/notes/symbols-or-pixels/).
 
 We compare two released VBVR-Pro video models with zero-shot Qwen language models of similar size on 475 paired samples of [VBVR-Pro-Bench](https://huggingface.co/datasets/Video-Reason/VBVR-Pro-Bench) (95 tasks, 5 samples each).
 - **Models.** The video models are G5 ([VBVR-Pro-Wan2.2-TI2V-5B](https://huggingface.co/Video-Reason/VBVR-Pro-Wan2.2-TI2V-5B)) and G27 ([VBVR-Pro-Wan2.2-I2V-A14B](https://huggingface.co/Video-Reason/VBVR-Pro-Wan2.2-I2V-A14B)). The language models are Qwen3.5-4B and Qwen3.6-27B, with Qwen3.5-9B as a reference.
@@ -161,7 +161,7 @@ Regenerated videos are not expected to be bit-identical.
 ```bibtex
 @misc{li2026symbols,
   author       = {Li, Bo},
-  title        = {Symbols or Pixels? Zero-Shot Language Reasoning versus VBVR-Trained Video Generation on Visual Reasoning Tasks},
+  title        = {Symbols or Pixels? Zero-Shot Language Reasoning versus Video Generation on Visual Reasoning Tasks},
   year         = {2026},
   howpublished = {LMMS Lab Notes},
   url          = {https://www.lmms-lab.com/notes/symbols-or-pixels/}
