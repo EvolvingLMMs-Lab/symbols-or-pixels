@@ -160,7 +160,7 @@ Regenerated videos are not expected to be bit-identical.
 
 ```bibtex
 @misc{li2026symbols,
-  author       = {Li, Brian},
+  author       = {Li, Bo},
   title        = {Symbols or Pixels? Zero-Shot Language Reasoning versus VBVR-Trained Video Generation on Visual Reasoning Tasks},
   year         = {2026},
   howpublished = {LMMS Lab Notes},
