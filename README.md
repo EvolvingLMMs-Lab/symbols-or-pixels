@@ -60,6 +60,10 @@ analysis/
   analyze.py         per-sample table -> results/summary/ (all tables of the note)
   flops.py           forward-FLOPs model for videos and language-model calls
   plot.py            static Figures 1-4 -> figures/
+experiments/
+  free/              follow-up pilot (results not included): a neutral "free" instruction next to layout and direct
+    free_pilot.py      generate through an OpenAI-compatible endpoint (greedy and sampled draws), cut at 2,048 tokens, grade
+    analyze_free.py    paired prompt differences, sampled-draw statistics, text - G27 differences
 results/
   per_sample.csv     475 paired samples: v2 scores, text answers, grades, outcomes, tokens, FLOPs
   excluded_tasks.csv the 5 benchmark tasks left out of the paired set, and why
